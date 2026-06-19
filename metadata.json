@@ -1,0 +1,5 @@
+{
+  "name": "AIMatch - AI Ledger Matching",
+  "description": "A high-performance reconciliation engine (AIMatch) for automated matching of Bank Statements vs General Ledger extracts with fuzzy narration matching and variance detection.",
+  "requestFramePermissions": []
+}

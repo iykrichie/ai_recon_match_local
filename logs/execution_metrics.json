@@ -1,0 +1,535 @@
+[
+  {
+    "id": "ccea21f5-d6fa-40cb-a718-7199b4a99931",
+    "timestamp": "2026-06-09T20:07:36.737Z",
+    "rowsProcessed": 2,
+    "matchedCount": 1,
+    "exceptionCount": 0,
+    "executionTimeMs": 5.76,
+    "accuracyRate": 100,
+    "mode": "INTERNAL"
+  },
+  {
+    "id": "d5319260-dae7-49ba-a242-706bab3efcdc",
+    "timestamp": "2026-06-18T16:46:08.896Z",
+    "rowsProcessed": 2,
+    "matchedCount": 1,
+    "exceptionCount": 0,
+    "executionTimeMs": 2,
+    "accuracyRate": 100,
+    "mode": "INTERNAL"
+  },
+  {
+    "id": "66a13005-222b-4bd2-8875-e61ec07b8657",
+    "timestamp": "2026-06-18T16:53:34.583Z",
+    "rowsProcessed": 4557,
+    "matchedCount": 1553,
+    "exceptionCount": 1451,
+    "executionTimeMs": 435,
+    "accuracyRate": 51.69773635153129,
+    "mode": "INTERNAL",
+    "valueMetrics": {
+      "manualEffortSavedHours": 25.88,
+      "manualEffortSavedDays": 3.24,
+      "estimatedCostSaving": 647.08
+    },
+    "systemInfo": {
+      "userAgent": "Mozilla/5.0 (X11; Linux x86_64; rv:151.0) Gecko/20100101 Firefox/151.0",
+      "platform": "Linux x86_64",
+      "workerSupported": true
+    }
+  },
+  {
+    "id": "8a32179a-34d1-4914-819d-2392f96cd30f",
+    "timestamp": "2026-06-18T17:06:48.080Z",
+    "rowsProcessed": 4557,
+    "matchedCount": 1553,
+    "exceptionCount": 1451,
+    "executionTimeMs": 439,
+    "accuracyRate": 51.69773635153129,
+    "mode": "INTERNAL",
+    "valueMetrics": {
+      "manualEffortSavedHours": 25.88,
+      "manualEffortSavedDays": 3.24,
+      "estimatedCostSaving": 647.08
+    },
+    "systemInfo": {
+      "userAgent": "Mozilla/5.0 (X11; Linux x86_64; rv:151.0) Gecko/20100101 Firefox/151.0",
+      "platform": "Linux x86_64",
+      "workerSupported": true
+    }
+  },
+  {
+    "id": "818cfe77-060b-4fd6-87a7-c326236275f4",
+    "timestamp": "2026-06-18T17:58:23.906Z",
+    "rowsProcessed": 4557,
+    "matchedCount": 1553,
+    "exceptionCount": 1451,
+    "executionTimeMs": 439,
+    "accuracyRate": 51.69773635153129,
+    "mode": "INTERNAL",
+    "valueMetrics": {
+      "manualEffortSavedHours": 25.88,
+      "manualEffortSavedDays": 3.24,
+      "estimatedCostSaving": 647.08
+    },
+    "systemInfo": {
+      "userAgent": "Mozilla/5.0 (X11; Linux x86_64; rv:151.0) Gecko/20100101 Firefox/151.0",
+      "platform": "Linux x86_64",
+      "workerSupported": true
+    }
+  },
+  {
+    "id": "4a222482-b450-4bba-b838-f232b1fae12d",
+    "timestamp": "2026-06-18T19:01:07.099Z",
+    "rowsProcessed": 4557,
+    "matchedCount": 1553,
+    "exceptionCount": 1451,
+    "executionTimeMs": 913,
+    "accuracyRate": 51.69773635153129,
+    "mode": "INTERNAL",
+    "valueMetrics": {
+      "manualEffortSavedHours": 25.88,
+      "manualEffortSavedDays": 3.24,
+      "estimatedCostSaving": 647.08
+    },
+    "systemInfo": {
+      "userAgent": "Mozilla/5.0 (X11; Linux x86_64; rv:151.0) Gecko/20100101 Firefox/151.0",
+      "platform": "Linux x86_64",
+      "workerSupported": true
+    }
+  },
+  {
+    "id": "ddb519b3-1f80-4d41-a639-af0b083d8792",
+    "timestamp": "2026-06-18T19:06:11.909Z",
+    "rowsProcessed": 4557,
+    "matchedCount": 1553,
+    "exceptionCount": 1451,
+    "executionTimeMs": 1056,
+    "accuracyRate": 51.69773635153129,
+    "mode": "INTERNAL",
+    "valueMetrics": {
+      "manualEffortSavedHours": 25.88,
+      "manualEffortSavedDays": 3.24,
+      "estimatedCostSaving": 647.08
+    },
+    "systemInfo": {
+      "userAgent": "Mozilla/5.0 (X11; Linux x86_64; rv:151.0) Gecko/20100101 Firefox/151.0",
+      "platform": "Linux x86_64",
+      "workerSupported": true
+    }
+  },
+  {
+    "id": "de7c669e-0d45-4a8f-a1d6-df9e94708902",
+    "timestamp": "2026-06-18T19:12:05.865Z",
+    "rowsProcessed": 4557,
+    "matchedCount": 1625,
+    "exceptionCount": 1308,
+    "executionTimeMs": 1495,
+    "accuracyRate": 55.404023184452775,
+    "mode": "INTERNAL",
+    "valueMetrics": {
+      "manualEffortSavedHours": 27.08,
+      "manualEffortSavedDays": 3.39,
+      "estimatedCostSaving": 677.08
+    },
+    "systemInfo": {
+      "userAgent": "Mozilla/5.0 (X11; Linux x86_64; rv:151.0) Gecko/20100101 Firefox/151.0",
+      "platform": "Linux x86_64",
+      "workerSupported": true
+    }
+  },
+  {
+    "id": "7e2db78d-c1f4-48ed-bdf7-15711342516d",
+    "timestamp": "2026-06-18T19:27:29.508Z",
+    "rowsProcessed": 4557,
+    "matchedCount": 1625,
+    "exceptionCount": 1308,
+    "executionTimeMs": 1424,
+    "accuracyRate": 55.404023184452775,
+    "mode": "INTERNAL",
+    "valueMetrics": {
+      "manualEffortSavedHours": 27.08,
+      "manualEffortSavedDays": 3.39,
+      "estimatedCostSaving": 677.08
+    },
+    "systemInfo": {
+      "userAgent": "Mozilla/5.0 (X11; Linux x86_64; rv:151.0) Gecko/20100101 Firefox/151.0",
+      "platform": "Linux x86_64",
+      "workerSupported": true
+    }
+  },
+  {
+    "id": "9c413ab3-d35c-4578-bf04-258a56f9668b",
+    "timestamp": "2026-06-18T19:29:23.611Z",
+    "rowsProcessed": 5578,
+    "matchedCount": 1872,
+    "exceptionCount": 1834,
+    "executionTimeMs": 2077,
+    "accuracyRate": 50.51268213707502,
+    "mode": "INTERNAL",
+    "valueMetrics": {
+      "manualEffortSavedHours": 31.2,
+      "manualEffortSavedDays": 3.9,
+      "estimatedCostSaving": 780
+    },
+    "systemInfo": {
+      "userAgent": "Mozilla/5.0 (X11; Linux x86_64; rv:151.0) Gecko/20100101 Firefox/151.0",
+      "platform": "Linux x86_64",
+      "workerSupported": true
+    }
+  },
+  {
+    "id": "6ada2786-eec3-4362-a0a6-eb7194d01e70",
+    "timestamp": "2026-06-18T19:39:48.878Z",
+    "rowsProcessed": 43705,
+    "matchedCount": 2649,
+    "exceptionCount": 38414,
+    "executionTimeMs": 152651,
+    "accuracyRate": 6.451063000754938,
+    "mode": "INTERNAL",
+    "valueMetrics": {
+      "manualEffortSavedHours": 44.15,
+      "manualEffortSavedDays": 5.52,
+      "estimatedCostSaving": 1103.75
+    },
+    "systemInfo": {
+      "userAgent": "Mozilla/5.0 (X11; Linux x86_64; rv:151.0) Gecko/20100101 Firefox/151.0",
+      "platform": "Linux x86_64",
+      "workerSupported": true
+    }
+  },
+  {
+    "id": "30831882-c5b7-4efa-8151-e96e4eb9cd98",
+    "timestamp": "2026-06-18T19:52:50.160Z",
+    "rowsProcessed": 5578,
+    "matchedCount": 1872,
+    "exceptionCount": 1834,
+    "executionTimeMs": 2040,
+    "accuracyRate": 50.51268213707502,
+    "mode": "INTERNAL",
+    "valueMetrics": {
+      "manualEffortSavedHours": 31.2,
+      "manualEffortSavedDays": 3.9,
+      "estimatedCostSaving": 780
+    },
+    "systemInfo": {
+      "userAgent": "Mozilla/5.0 (X11; Linux x86_64; rv:151.0) Gecko/20100101 Firefox/151.0",
+      "platform": "Linux x86_64",
+      "workerSupported": true
+    }
+  },
+  {
+    "id": "e1933453-b2cb-437a-927f-c790bffae0ff",
+    "timestamp": "2026-06-18T19:53:06.168Z",
+    "rowsProcessed": 4557,
+    "matchedCount": 1625,
+    "exceptionCount": 1308,
+    "executionTimeMs": 1532,
+    "accuracyRate": 55.404023184452775,
+    "mode": "INTERNAL",
+    "valueMetrics": {
+      "manualEffortSavedHours": 27.08,
+      "manualEffortSavedDays": 3.39,
+      "estimatedCostSaving": 677.08
+    },
+    "systemInfo": {
+      "userAgent": "Mozilla/5.0 (X11; Linux x86_64; rv:151.0) Gecko/20100101 Firefox/151.0",
+      "platform": "Linux x86_64",
+      "workerSupported": true
+    }
+  },
+  {
+    "id": "4bdc4238-ebbd-46a6-910f-6d6ca5a01af2",
+    "timestamp": "2026-06-18T19:57:01.978Z",
+    "rowsProcessed": 4557,
+    "matchedCount": 1670,
+    "exceptionCount": 1243,
+    "executionTimeMs": 3324,
+    "accuracyRate": 57.32921386886372,
+    "mode": "INTERNAL",
+    "valueMetrics": {
+      "manualEffortSavedHours": 27.83,
+      "manualEffortSavedDays": 3.48,
+      "estimatedCostSaving": 695.83
+    },
+    "systemInfo": {
+      "userAgent": "Mozilla/5.0 (X11; Linux x86_64; rv:151.0) Gecko/20100101 Firefox/151.0",
+      "platform": "Linux x86_64",
+      "workerSupported": true
+    }
+  },
+  {
+    "id": "3eeabfc4-ab3a-4003-ba52-a77e562b444d",
+    "timestamp": "2026-06-18T20:04:03.550Z",
+    "rowsProcessed": 4557,
+    "matchedCount": 1610,
+    "exceptionCount": 1337,
+    "executionTimeMs": 3813,
+    "accuracyRate": 54.63182897862233,
+    "mode": "INTERNAL",
+    "valueMetrics": {
+      "manualEffortSavedHours": 26.83,
+      "manualEffortSavedDays": 3.35,
+      "estimatedCostSaving": 670.83
+    },
+    "systemInfo": {
+      "userAgent": "Mozilla/5.0 (X11; Linux x86_64; rv:151.0) Gecko/20100101 Firefox/151.0",
+      "platform": "Linux x86_64",
+      "workerSupported": true
+    }
+  },
+  {
+    "id": "0497c5e3-f0ed-4c88-ae14-212911fe4871",
+    "timestamp": "2026-06-18T20:07:35.525Z",
+    "rowsProcessed": 0,
+    "matchedCount": 0,
+    "exceptionCount": 0,
+    "executionTimeMs": 0,
+    "accuracyRate": 0,
+    "mode": "INTERNAL",
+    "valueMetrics": {
+      "manualEffortSavedHours": 0,
+      "manualEffortSavedDays": 0,
+      "estimatedCostSaving": 0
+    },
+    "systemInfo": {
+      "userAgent": "Mozilla/5.0 (X11; Linux x86_64; rv:151.0) Gecko/20100101 Firefox/151.0",
+      "platform": "Linux x86_64",
+      "workerSupported": true
+    }
+  },
+  {
+    "id": "742c71c2-6036-45d2-9f2c-84ccf87712e6",
+    "timestamp": "2026-06-18T20:08:13.555Z",
+    "rowsProcessed": 4557,
+    "matchedCount": 1610,
+    "exceptionCount": 1337,
+    "executionTimeMs": 3329,
+    "accuracyRate": 54.63182897862233,
+    "mode": "INTERNAL",
+    "valueMetrics": {
+      "manualEffortSavedHours": 26.83,
+      "manualEffortSavedDays": 3.35,
+      "estimatedCostSaving": 670.83
+    },
+    "systemInfo": {
+      "userAgent": "Mozilla/5.0 (X11; Linux x86_64; rv:151.0) Gecko/20100101 Firefox/151.0",
+      "platform": "Linux x86_64",
+      "workerSupported": true
+    }
+  },
+  {
+    "id": "46285889-39b9-4aea-ab2a-a29b895b51d4",
+    "timestamp": "2026-06-19T09:15:41.138Z",
+    "rowsProcessed": 18310,
+    "matchedCount": 2556,
+    "exceptionCount": 13281,
+    "executionTimeMs": 2851513,
+    "accuracyRate": 16.139420344762264,
+    "mode": "INTERNAL",
+    "valueMetrics": {
+      "manualEffortSavedHours": 42.6,
+      "manualEffortSavedDays": 5.33,
+      "estimatedCostSaving": 1065
+    },
+    "systemInfo": {
+      "userAgent": "Mozilla/5.0 (X11; Linux x86_64; rv:151.0) Gecko/20100101 Firefox/151.0",
+      "platform": "Linux x86_64",
+      "workerSupported": true
+    }
+  },
+  {
+    "id": "c1f550ec-2d8c-4108-adec-3a92776e7e67",
+    "timestamp": "2026-06-19T09:50:53.341Z",
+    "rowsProcessed": 4557,
+    "matchedCount": 1610,
+    "exceptionCount": 1337,
+    "executionTimeMs": 3324,
+    "matchCompleteness": 54.63182897862233,
+    "averageAccuracy": 99.97598343685301,
+    "mode": "INTERNAL",
+    "apiMetrics": {
+      "apiCalls": 0,
+      "promptTokens": 0,
+      "completionTokens": 0
+    },
+    "valueMetrics": {
+      "manualEffortSavedHours": 26.83,
+      "manualEffortSavedDays": 3.35,
+      "estimatedCostSaving": 670.83
+    },
+    "systemInfo": {
+      "userAgent": "Mozilla/5.0 (X11; Linux x86_64; rv:151.0) Gecko/20100101 Firefox/151.0",
+      "platform": "Linux x86_64",
+      "workerSupported": true
+    }
+  },
+  {
+    "id": "09a1d359-ee4d-482a-87a6-b3361344b690",
+    "timestamp": "2026-06-19T14:22:59.993Z",
+    "rowsProcessed": 4557,
+    "matchedCount": 1610,
+    "exceptionCount": 1337,
+    "executionTimeMs": 3607,
+    "matchCompleteness": 54.63182897862233,
+    "averageAccuracy": 99.97598343685301,
+    "mode": "INTERNAL",
+    "apiMetrics": {
+      "apiCalls": 0,
+      "promptTokens": 0,
+      "completionTokens": 0
+    },
+    "valueMetrics": {
+      "manualEffortSavedHours": 26.83,
+      "manualEffortSavedDays": 3.35,
+      "estimatedCostSaving": 670.83
+    },
+    "systemInfo": {
+      "userAgent": "Mozilla/5.0 (X11; Linux x86_64; rv:151.0) Gecko/20100101 Firefox/151.0",
+      "platform": "Linux x86_64",
+      "workerSupported": true
+    }
+  },
+  {
+    "id": "28c99564-7937-473f-a2ca-d4a3ad649dc2",
+    "timestamp": "2026-06-19T14:30:00.000Z",
+    "rowsProcessed": 100,
+    "matchedCount": 85,
+    "exceptionCount": 15,
+    "executionTimeMs": 1200,
+    "matchCompleteness": 85,
+    "averageAccuracy": 97.5,
+    "mode": "INTERNAL",
+    "apiMetrics": {
+      "apiCalls": 5,
+      "promptTokens": 2100,
+      "completionTokens": 160
+    },
+    "valueMetrics": {
+      "manualEffortSavedHours": 1.42,
+      "manualEffortSavedDays": 0.18,
+      "estimatedCostSaving": 35.42
+    }
+  },
+  {
+    "id": "4b257bf3-6eba-47ff-ac9f-61f45fff27d1",
+    "timestamp": "2026-06-19T14:35:15.156Z",
+    "rowsProcessed": 500,
+    "matchedCount": 450,
+    "exceptionCount": 50,
+    "executionTimeMs": 2500,
+    "matchCompleteness": 90,
+    "averageAccuracy": 98.2,
+    "mode": "INTERNAL",
+    "apiMetrics": {
+      "apiCalls": 3,
+      "promptTokens": 1200,
+      "completionTokens": 96
+    }
+  },
+  {
+    "id": "603a7fc4-76d7-4f49-ada9-df847aa67bba",
+    "timestamp": "2026-06-19T14:56:59.623Z",
+    "rowsProcessed": 37086,
+    "matchedCount": 11879,
+    "exceptionCount": 13374,
+    "executionTimeMs": 510479,
+    "matchCompleteness": 47.0399556488338,
+    "averageAccuracy": 99.9656046649201,
+    "mode": "INTERNAL",
+    "apiMetrics": {
+      "apiCalls": 0,
+      "promptTokens": 0,
+      "completionTokens": 0
+    },
+    "valueMetrics": {
+      "manualEffortSavedHours": 197.98,
+      "manualEffortSavedDays": 24.75,
+      "estimatedCostSaving": 4949.58
+    },
+    "systemInfo": {
+      "userAgent": "Mozilla/5.0 (X11; Linux x86_64; rv:151.0) Gecko/20100101 Firefox/151.0",
+      "platform": "Linux x86_64",
+      "workerSupported": true
+    }
+  },
+  {
+    "id": "0020d80a-2fc3-41b7-b5d4-47cb24b46348",
+    "timestamp": "2026-06-19T15:27:54.793Z",
+    "rowsProcessed": 37086,
+    "matchedCount": 11879,
+    "exceptionCount": 13374,
+    "executionTimeMs": 475548,
+    "matchCompleteness": 47.0399556488338,
+    "averageAccuracy": 99.9656046649201,
+    "mode": "INTERNAL",
+    "apiMetrics": {
+      "apiCalls": 0,
+      "promptTokens": 0,
+      "completionTokens": 0
+    },
+    "valueMetrics": {
+      "manualEffortSavedHours": 197.98,
+      "manualEffortSavedDays": 24.75,
+      "estimatedCostSaving": 4949.58
+    },
+    "systemInfo": {
+      "userAgent": "Mozilla/5.0 (X11; Linux x86_64; rv:151.0) Gecko/20100101 Firefox/151.0",
+      "platform": "Linux x86_64",
+      "workerSupported": true
+    }
+  },
+  {
+    "id": "41601eae-5692-4598-b22a-7a429285ee73",
+    "timestamp": "2026-06-19T15:36:20.930Z",
+    "rowsProcessed": 4557,
+    "matchedCount": 1610,
+    "exceptionCount": 1337,
+    "executionTimeMs": 4001,
+    "matchCompleteness": 54.63182897862233,
+    "averageAccuracy": 99.97598343685301,
+    "mode": "INTERNAL",
+    "apiMetrics": {
+      "apiCalls": 0,
+      "promptTokens": 0,
+      "completionTokens": 0
+    },
+    "valueMetrics": {
+      "manualEffortSavedHours": 26.83,
+      "manualEffortSavedDays": 3.35,
+      "estimatedCostSaving": 670.83
+    },
+    "systemInfo": {
+      "userAgent": "Mozilla/5.0 (X11; Linux x86_64; rv:151.0) Gecko/20100101 Firefox/151.0",
+      "platform": "Linux x86_64",
+      "workerSupported": true
+    }
+  },
+  {
+    "id": "4d6d4321-b1f6-46c6-aa60-9ff523f32693",
+    "timestamp": "2026-06-19T15:36:41.309Z",
+    "rowsProcessed": 5578,
+    "matchedCount": 1861,
+    "exceptionCount": 1856,
+    "executionTimeMs": 4437,
+    "matchCompleteness": 50.06725854183481,
+    "averageAccuracy": 99.95360917069677,
+    "mode": "INTERNAL",
+    "apiMetrics": {
+      "apiCalls": 0,
+      "promptTokens": 0,
+      "completionTokens": 0
+    },
+    "valueMetrics": {
+      "manualEffortSavedHours": 31.02,
+      "manualEffortSavedDays": 3.88,
+      "estimatedCostSaving": 775.42
+    },
+    "systemInfo": {
+      "userAgent": "Mozilla/5.0 (X11; Linux x86_64; rv:151.0) Gecko/20100101 Firefox/151.0",
+      "platform": "Linux x86_64",
+      "workerSupported": true
+    }
+  }
+]
