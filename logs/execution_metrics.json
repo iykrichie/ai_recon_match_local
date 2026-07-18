@@ -531,5 +531,161 @@
       "platform": "Linux x86_64",
       "workerSupported": true
     }
+  },
+  {
+    "id": "f7cf1828-7219-4f4d-92fb-b2af6c5b5b82",
+    "timestamp": "2026-07-18T01:47:38.865Z",
+    "rowsProcessed": 14053,
+    "matchedCount": 4751,
+    "exceptionCount": 4628,
+    "executionTimeMs": 38973,
+    "matchCompleteness": 50.65572022603689,
+    "averageAccuracy": 99.9297776827704,
+    "mode": "INTERNAL",
+    "apiMetrics": {
+      "apiCalls": 0,
+      "promptTokens": 0,
+      "completionTokens": 0
+    },
+    "valueMetrics": {
+      "manualEffortSavedHours": 79.18,
+      "manualEffortSavedDays": 9.9,
+      "estimatedCostSaving": 1979.58
+    },
+    "systemInfo": {
+      "userAgent": "Mozilla/5.0 (Windows NT 10.0; Win64; x64; rv:152.0) Gecko/20100101 Firefox/152.0",
+      "platform": "Win32",
+      "workerSupported": true
+    }
+  },
+  {
+    "id": "4b619897-66e0-4bb5-ab5a-ce7530881778",
+    "timestamp": "2026-07-18T08:26:11.326Z",
+    "rowsProcessed": 4557,
+    "matchedCount": 1610,
+    "exceptionCount": 1337,
+    "executionTimeMs": 3580,
+    "matchCompleteness": 70.6605222734255,
+    "averageAccuracy": 99.97670807453416,
+    "mode": "INTERNAL",
+    "apiMetrics": {
+      "apiCalls": 0,
+      "promptTokens": 0,
+      "completionTokens": 0
+    },
+    "valueMetrics": {
+      "manualEffortSavedHours": 26.83,
+      "manualEffortSavedDays": 3.35,
+      "estimatedCostSaving": 670.83
+    },
+    "systemInfo": {
+      "userAgent": "Mozilla/5.0 (Windows NT 10.0; Win64; x64; rv:152.0) Gecko/20100101 Firefox/152.0",
+      "platform": "Win32",
+      "workerSupported": true
+    }
+  },
+  {
+    "id": "a9f24d8a-a687-4ce5-8e85-cb6a4d1b6532",
+    "timestamp": "2026-07-18T08:27:02.415Z",
+    "rowsProcessed": 5578,
+    "matchedCount": 1864,
+    "exceptionCount": 1850,
+    "executionTimeMs": 5418,
+    "matchCompleteness": 66.83399067766224,
+    "averageAccuracy": 99.95368383404865,
+    "mode": "INTERNAL",
+    "apiMetrics": {
+      "apiCalls": 0,
+      "promptTokens": 0,
+      "completionTokens": 0
+    },
+    "valueMetrics": {
+      "manualEffortSavedHours": 31.07,
+      "manualEffortSavedDays": 3.88,
+      "estimatedCostSaving": 776.67
+    },
+    "systemInfo": {
+      "userAgent": "Mozilla/5.0 (Windows NT 10.0; Win64; x64; rv:152.0) Gecko/20100101 Firefox/152.0",
+      "platform": "Win32",
+      "workerSupported": true
+    }
+  },
+  {
+    "id": "68cf7781-d185-4099-9ab6-849acda75269",
+    "timestamp": "2026-07-18T08:49:23.239Z",
+    "rowsProcessed": 43705,
+    "matchedCount": 1724,
+    "exceptionCount": 40257,
+    "executionTimeMs": 1313141,
+    "matchCompleteness": 7.889257522022652,
+    "averageAccuracy": 98.35402165506575,
+    "mode": "INTERNAL",
+    "apiMetrics": {
+      "apiCalls": 0,
+      "promptTokens": 0,
+      "completionTokens": 0
+    },
+    "valueMetrics": {
+      "manualEffortSavedHours": 28.73,
+      "manualEffortSavedDays": 3.59,
+      "estimatedCostSaving": 718.33
+    },
+    "systemInfo": {
+      "userAgent": "Mozilla/5.0 (Windows NT 10.0; Win64; x64; rv:152.0) Gecko/20100101 Firefox/152.0",
+      "platform": "Win32",
+      "workerSupported": true
+    }
+  },
+  {
+    "id": "3a01d4ed-a345-4121-bb6c-eaf70165cbcd",
+    "timestamp": "2026-07-18T08:53:24.857Z",
+    "rowsProcessed": 14053,
+    "matchedCount": 4751,
+    "exceptionCount": 4628,
+    "executionTimeMs": 37071,
+    "matchCompleteness": 67.06753006475485,
+    "averageAccuracy": 99.9297776827704,
+    "mode": "INTERNAL",
+    "apiMetrics": {
+      "apiCalls": 0,
+      "promptTokens": 0,
+      "completionTokens": 0
+    },
+    "valueMetrics": {
+      "manualEffortSavedHours": 79.18,
+      "manualEffortSavedDays": 9.9,
+      "estimatedCostSaving": 1979.58
+    },
+    "systemInfo": {
+      "userAgent": "Mozilla/5.0 (Windows NT 10.0; Win64; x64; rv:152.0) Gecko/20100101 Firefox/152.0",
+      "platform": "Win32",
+      "workerSupported": true
+    }
+  },
+  {
+    "id": "89304570-9fa3-4b5b-ac57-90976a65a0e5",
+    "timestamp": "2026-07-18T09:37:42.521Z",
+    "rowsProcessed": 14053,
+    "matchedCount": 4751,
+    "exceptionCount": 4628,
+    "executionTimeMs": 25773,
+    "matchCompleteness": 67.06753006475485,
+    "averageAccuracy": 99.9297776827704,
+    "mode": "INTERNAL",
+    "apiMetrics": {
+      "apiCalls": 0,
+      "promptTokens": 0,
+      "completionTokens": 0
+    },
+    "valueMetrics": {
+      "manualEffortSavedHours": 79.18,
+      "manualEffortSavedDays": 9.9,
+      "estimatedCostSaving": 1979.58
+    },
+    "systemInfo": {
+      "userAgent": "Mozilla/5.0 (Windows NT 10.0; Win64; x64; rv:152.0) Gecko/20100101 Firefox/152.0",
+      "platform": "Win32",
+      "workerSupported": true
+    }
   }
 ]

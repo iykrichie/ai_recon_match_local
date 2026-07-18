@@ -99,7 +99,19 @@ async function startServer() {
   app.get("/api/v1/metrics/history", async (req, res) => {
     try {
       const data = await fs.readFile(LOGS_FILE, 'utf8');
-      res.json(JSON.parse(data));
+      let logs = JSON.parse(data);
+      const { startDate, endDate } = req.query;
+
+      if (startDate) {
+        logs = logs.filter((l: any) => new Date(l.timestamp) >= new Date(startDate as string));
+      }
+      if (endDate) {
+        const end = new Date(endDate as string);
+        end.setDate(end.getDate() + 1);
+        logs = logs.filter((l: any) => new Date(l.timestamp) < end);
+      }
+
+      res.json(logs);
     } catch {
       res.json([]);
     }

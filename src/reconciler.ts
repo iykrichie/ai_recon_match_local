@@ -8,6 +8,7 @@ export class ReconciliationEngine {
   private unmatchedDebits: Set<string> = new Set();
   private unmatchedCredits: Set<string> = new Set();
   private mode: 'INTERNAL' | 'BANK_VS_GL' = 'INTERNAL';
+  private similarityCache = new Map<string, number>();
 
   private static readonly DATE_WINDOW_DAYS = 90;
   private static readonly AMOUNT_TOLERANCE_PERCENT = 0;
@@ -64,6 +65,22 @@ export class ReconciliationEngine {
     risk_type: /(FIRE AND SPECIAL|COMBINED FIRE|PLANT ALL RISK|MARINE)/i,
   };
 
+  private getSignificantKeywords(cleanedText: string): string[] {
+    if (!cleanedText) return [];
+    return cleanedText
+      .split(/\s+/)
+      .filter(word => word.length >= 3)
+      .filter((v, i, a) => a.indexOf(v) === i); // Return unique keywords
+  }
+
+  private applyPrecomputedFields(txn: Transaction): void {
+    txn._cleanNarration = this.cleanNarration(txn.details);
+    txn._significantKeywords = this.getSignificantKeywords(txn._cleanNarration);
+    txn._multiReferences = txn.reference 
+      ? txn.reference.split('|').map(r => r.replace(/[^a-zA-Z0-9]/g, '').toUpperCase()).filter(r => r.length > 0)
+      : [];
+  }
+
   constructor(sourceA: any[], sourceB?: any[]) {
     if (sourceB) {
       this.mode = 'BANK_VS_GL';
@@ -72,6 +89,17 @@ export class ReconciliationEngine {
       this.mode = 'INTERNAL';
       this.preprocessInternal(sourceA);
     }
+  }
+
+  private getFuzzyScore(s1: string, s2: string): number {
+    if (!s1 && !s2) return 100;
+    if (!s1 || !s2) return 0;
+    const key = s1 < s2 ? `${s1}|${s2}` : `${s2}|${s1}`;
+    if (this.similarityCache.has(key)) return this.similarityCache.get(key)!;
+    
+    const score = token_set_ratio(s1, s2);
+    this.similarityCache.set(key, score);
+    return score;
   }
 
   private parseDate(val: any): Date {
@@ -234,21 +262,25 @@ export class ReconciliationEngine {
 
       if (debitVal > 0) {
         const dId = id + '_D';
-        this.debits.push({ 
+        const dTxn: Transaction = { 
           id: dId, date, details, 
           reference: Array.from(extractedRefs).join('|'), 
           debit: debitVal, credit: 0, originalAmount: debitVal, absAmount: debitVal, type: 'Normal', side: 'Debit' 
-        });
+        };
+        this.applyPrecomputedFields(dTxn);
+        this.debits.push(dTxn);
         this.unmatchedDebits.add(dId);
       } 
       
       if (creditVal > 0) {
         const cId = id + '_C';
-        this.credits.push({ 
+        const cTxn: Transaction = { 
           id: cId, date, details, 
           reference: Array.from(extractedRefs).join('|'), 
           debit: 0, credit: creditVal, originalAmount: -creditVal, absAmount: creditVal, type: 'Normal', side: 'Credit' 
-        });
+        };
+        this.applyPrecomputedFields(cTxn);
+        this.credits.push(cTxn);
         this.unmatchedCredits.add(cId);
       }
     });
@@ -276,12 +308,16 @@ export class ReconciliationEngine {
       
       if (creditVal > 0) {
         const cId = id + '_C';
-        this.credits.push({ id: cId, date, reference, details, debit: 0, credit: creditVal, originalAmount: creditVal, absAmount: creditVal, type: 'Normal', side: 'Credit', source: 'BANK' });
+        const cTxn: Transaction = { id: cId, date, reference, details, debit: 0, credit: creditVal, originalAmount: creditVal, absAmount: creditVal, type: 'Normal', side: 'Credit', source: 'BANK' };
+        this.applyPrecomputedFields(cTxn);
+        this.credits.push(cTxn);
         this.unmatchedCredits.add(cId);
       } 
       else if (debitVal > 0) {
         const dId = id + '_D';
-        this.debits.push({ id: dId, date, reference, details, debit: debitVal, credit: 0, originalAmount: -debitVal, absAmount: debitVal, type: 'Normal', side: 'Debit', source: 'BANK' });
+        const dTxn: Transaction = { id: dId, date, reference, details, debit: debitVal, credit: 0, originalAmount: -debitVal, absAmount: debitVal, type: 'Normal', side: 'Debit', source: 'BANK' };
+        this.applyPrecomputedFields(dTxn);
+        this.debits.push(dTxn);
         this.unmatchedDebits.add(dId);
       }
     });
@@ -307,12 +343,16 @@ export class ReconciliationEngine {
       
       if (debitVal > 0) {
         const dId = id + '_D';
-        this.debits.push({ id: dId, date, reference, details, debit: debitVal, credit: 0, originalAmount: debitVal, absAmount: debitVal, type: 'Normal', side: 'Debit', source: 'GL' });
+        const dTxn: Transaction = { id: dId, date, reference, details, debit: debitVal, credit: 0, originalAmount: debitVal, absAmount: debitVal, type: 'Normal', side: 'Debit', source: 'GL' };
+        this.applyPrecomputedFields(dTxn);
+        this.debits.push(dTxn);
         this.unmatchedDebits.add(dId);
       }
       else if (creditVal > 0) {
         const cId = id + '_C';
-        this.credits.push({ id: cId, date, reference, details, debit: 0, credit: creditVal, originalAmount: -creditVal, absAmount: creditVal, type: 'Normal', side: 'Credit', source: 'GL' });
+        const cTxn: Transaction = { id: cId, date, reference, details, debit: 0, credit: creditVal, originalAmount: -creditVal, absAmount: creditVal, type: 'Normal', side: 'Credit', source: 'GL' };
+        this.applyPrecomputedFields(cTxn);
+        this.credits.push(cTxn);
         this.unmatchedCredits.add(cId);
       }
     });
@@ -335,10 +375,13 @@ export class ReconciliationEngine {
       ? this.debits.length + this.credits.length
       : this.debits.length + this.credits.length; // Same either way since they are pre-populated
       
+    // Calculate percentage matched: 1 - (unmatched / total_entries)
+    // The total dataset (Internal Ledger) is divided into debits and credits
     const matchedCount = output.reconciled.length;
     const exceptionCount = output.exceptions.length;
-    const totalOutputRows = matchedCount + exceptionCount;
-    const matchCompleteness = totalOutputRows > 0 ? (matchedCount / totalOutputRows) * 100 : 0;
+    const totalEntries = this.debits.length + this.credits.length;
+    const unmatchedEntries = this.unmatchedDebits.size + this.unmatchedCredits.size;
+    const matchCompleteness = totalEntries > 0 ? (1 - (unmatchedEntries / totalEntries)) * 100 : 0;
     
     // Average accuracy score across all matched pairs
     const totalScore = this.matches.reduce((acc, m) => acc + (m.accuracyScore || m.confidence || 0), 0);
@@ -398,17 +441,28 @@ export class ReconciliationEngine {
       let matchReason = '';
       let isReversal = false;
 
-      const cleanCreditDetails = this.cleanNarration(credit.details);
+      const cleanCreditDetails = credit._cleanNarration !== undefined ? credit._cleanNarration : this.cleanNarration(credit.details);
+      const creditKeywords = credit._significantKeywords || this.getSignificantKeywords(cleanCreditDetails);
 
       for (const d of amountCandidates) {
-        const cleanDebitDetails = this.cleanNarration(d.details);
+        const cleanDebitDetails = d._cleanNarration !== undefined ? d._cleanNarration : this.cleanNarration(d.details);
 
         // Check if it's a reversal (Same amount, different month)
         const monthsDiff = d.date.getMonth() !== credit.date.getMonth() || 
                           d.date.getFullYear() !== credit.date.getFullYear();
         
-        // Use token_set_ratio for better handling of word reordering and extra info
-        let fuzzyScore = token_set_ratio(cleanCreditDetails, cleanDebitDetails);
+        const debitKeywords = d._significantKeywords || this.getSignificantKeywords(cleanDebitDetails);
+        
+        // FAST-PATH: Keyword Intersection
+        if (creditKeywords.length > 0 && debitKeywords.length > 0) {
+           const hasIntersection = creditKeywords.some(k => debitKeywords.includes(k));
+           if (!hasIntersection && credit.details.trim().toUpperCase() !== d.details.trim().toUpperCase()) {
+              continue;
+           }
+        }
+
+        // Use memoized fuzzy score for better handling of word reordering and extra info
+        let fuzzyScore = this.getFuzzyScore(cleanCreditDetails, cleanDebitDetails);
         
         // Safety: If cleaned narrations are empty, don't match unless raw details are identical
         if (!cleanCreditDetails && !cleanDebitDetails) {
@@ -453,6 +507,11 @@ export class ReconciliationEngine {
           isReversal = monthsDiff;
           matchReason = isReversal ? 'Reversal (Same Amount, Different Month)' : 
                         (entityOverlap || riskOverlap ? 'Semantic + Syntactic Match' : 'Syntactic Match');
+        }
+        
+        // Break early if perfect score on the same day
+        if (fuzzyScore === 100 && !monthsDiff && diffDays === 0) {
+            break;
         }
       }
 
@@ -507,9 +566,9 @@ export class ReconciliationEngine {
           const bestMatch = candidates[bestMatchIndex];
           
           // Safety: Check name similarity even with reference match to prevent cross-person mismatches
-          const cleanCredit = this.cleanNarration(credit.details);
-          const cleanDebit = this.cleanNarration(bestMatch.details);
-          const nameScore = token_set_ratio(cleanCredit, cleanDebit);
+          const cleanCredit = credit._cleanNarration !== undefined ? credit._cleanNarration : this.cleanNarration(credit.details);
+          const cleanDebit = bestMatch._cleanNarration !== undefined ? bestMatch._cleanNarration : this.cleanNarration(bestMatch.details);
+          const nameScore = this.getFuzzyScore(cleanCredit, cleanDebit);
           
           if (nameScore < 80 && credit.details.trim().toUpperCase() !== bestMatch.details.trim().toUpperCase()) {
             continue;
@@ -565,11 +624,22 @@ export class ReconciliationEngine {
         return true;
       });
 
+      const cleanCreditDetails = credit._cleanNarration !== undefined ? credit._cleanNarration : this.cleanNarration(credit.details);
+      const creditKeywords = credit._significantKeywords || this.getSignificantKeywords(cleanCreditDetails);
+
       for (const d of candidates) {
-        const cleanCreditDetails = this.cleanNarration(credit.details);
-        const cleanDebitDetails = this.cleanNarration(d.details);
-        
-        let fuzzyScore = token_set_ratio(cleanCreditDetails, cleanDebitDetails);
+        const cleanDebitDetails = d._cleanNarration !== undefined ? d._cleanNarration : this.cleanNarration(d.details);
+        const debitKeywords = d._significantKeywords || this.getSignificantKeywords(cleanDebitDetails);
+
+        // FAST-PATH: Keyword Intersection
+        if (creditKeywords.length > 0 && debitKeywords.length > 0) {
+           const hasIntersection = creditKeywords.some(k => debitKeywords.includes(k));
+           if (!hasIntersection && credit.details.trim().toUpperCase() !== d.details.trim().toUpperCase()) {
+              continue;
+           }
+        }
+
+        let fuzzyScore = this.getFuzzyScore(cleanCreditDetails, cleanDebitDetails);
 
         // Safety: If cleaned narrations are empty, don't match unless raw details are identical
         if (!cleanCreditDetails && !cleanDebitDetails) {
@@ -599,6 +669,12 @@ export class ReconciliationEngine {
             bestMatch = d;
           }
         }
+        
+        // Break early if perfect score on the same day
+        if (highestScore === 100 && bestMatch) {
+            const currentBestDiff = Math.abs(bestMatch.date.getTime() - credit.date.getTime());
+            if (currentBestDiff === 0) break;
+        }
       }
 
       if (bestMatch) {
@@ -618,22 +694,39 @@ export class ReconciliationEngine {
   }
 
   private areTransactionsSimilar(primary: Transaction, subset: Transaction[]): boolean {
-    const cleanPrimaryNarration = this.cleanNarration(primary.details);
-    const primaryRefs = primary.reference 
+    const cleanPrimaryNarration = primary._cleanNarration !== undefined ? primary._cleanNarration : this.cleanNarration(primary.details);
+    const primaryKeywords = primary._significantKeywords || this.getSignificantKeywords(cleanPrimaryNarration);
+    
+    const primaryRefs = primary._multiReferences !== undefined ? primary._multiReferences : (primary.reference 
       ? primary.reference.split('|').map(r => r.replace(/[^a-zA-Z0-9]/g, '').toUpperCase()).filter(r => r.length > 0) 
-      : [];
+      : []);
 
     for (const d of subset) {
       // --- 1. Semantic (Narration) Validation ---
-      const cleanSubsetNarration = this.cleanNarration(d.details);
-      const fuzzyNarrationScore = token_set_ratio(cleanPrimaryNarration, cleanSubsetNarration);
+      const cleanSubsetNarration = d._cleanNarration !== undefined ? d._cleanNarration : this.cleanNarration(d.details);
+      const subsetKeywords = d._significantKeywords || this.getSignificantKeywords(cleanSubsetNarration);
+      
+      let fuzzyNarrationScore = 0;
+      let skipFuzzy = false;
+      
+      if (primaryKeywords.length > 0 && subsetKeywords.length > 0) {
+         const hasIntersection = primaryKeywords.some(k => subsetKeywords.includes(k));
+         if (!hasIntersection && primary.details.trim().toUpperCase() !== d.details.trim().toUpperCase()) {
+            skipFuzzy = true;
+         }
+      }
+      
+      if (!skipFuzzy) {
+        fuzzyNarrationScore = this.getFuzzyScore(cleanPrimaryNarration, cleanSubsetNarration);
+      }
+      
       const isNarrationSimilar = fuzzyNarrationScore >= 70 || primary.details.trim().toUpperCase() === d.details.trim().toUpperCase();
 
       // --- 2. Structural (Reference) Validation ---
       let isRefSimilar = false;
-      const dRefs = d.reference 
+      const dRefs = d._multiReferences !== undefined ? d._multiReferences : (d.reference 
         ? d.reference.split('|').map(r => r.replace(/[^a-zA-Z0-9]/g, '').toUpperCase()).filter(r => r.length > 0) 
-        : [];
+        : []);
 
       // If both completely lack reference data, we assume structural neutrality and rely on the strong Semantic pass.
       if (primaryRefs.length === 0 && dRefs.length === 0) {
@@ -648,7 +741,7 @@ export class ReconciliationEngine {
               break;
             }
             // Fuzzy similarity for corrupted references
-            if (token_set_ratio(pr, dr) >= 80) {
+            if (this.getFuzzyScore(pr, dr) >= 80) {
               isRefSimilar = true;
               break;
             }
@@ -711,7 +804,7 @@ export class ReconciliationEngine {
       
       if (matchedSubset && matchedSubset.length > 1) {
         // If the summary is a Credit (INTERNAL) or if it's the BANK_VS_GL equivalent
-        const isSummaryCredit = summary.side === 'Credit' || summary.type === 'CREDIT';
+        const isSummaryCredit = summary.side === 'Credit';
         const credits = isSummaryCredit ? [summary] : matchedSubset;
         const debits = isSummaryCredit ? matchedSubset : [summary];
         
@@ -739,7 +832,7 @@ export class ReconciliationEngine {
   private findSubsetSum(summary: Transaction, candidates: Transaction[], target: number): Transaction[] | null {
     let bestSubset: Transaction[] | null = null;
     let iterations = 0;
-    const MAX_ITERATIONS = 50000; // Increased limit to allow deeper search
+    const MAX_ITERATIONS = 15000; // Reduced limit to prevent combinatorial explosions on identical small fees
 
     // Sort descending to reach target or overshoot much faster
     const sortedCandidates = [...candidates].sort((a, b) => b.absAmount - a.absAmount);

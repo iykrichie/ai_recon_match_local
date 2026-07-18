@@ -12,6 +12,11 @@ export interface Transaction {
   type: 'Normal' | 'Reversal';
   side: 'Debit' | 'Credit';
   source?: 'BANK' | 'GL';
+  
+  // Pre-computed caching fields (Optimizations)
+  _cleanNarration?: string;
+  _significantKeywords?: string[];
+  _multiReferences?: string[];
 }
 
 export interface MatchResult {
