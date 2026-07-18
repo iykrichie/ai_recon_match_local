@@ -28,13 +28,10 @@ export class ReconciliationEngine {
       cleaned = cleaned.replace(/CORONATION\s*\/?/g, ' ');
     }
     
-    // 2. Handle "R######_######_#" pattern and extract what's AFTER it
+    // 2. Handle "R######_######_#" pattern and remove it
     // Example: R260201_230203_3 HILLS MART MULTI SERVICE_099AFLT
     const txnIdPattern = /R\d{6}_\d{6}_\d+/;
-    const txnMatch = cleaned.match(txnIdPattern);
-    if (txnMatch) {
-      cleaned = cleaned.substring(txnMatch.index! + txnMatch[0].length);
-    }
+    cleaned = cleaned.replace(txnIdPattern, ' ');
     
     // 3. Handle the "first 16 digits" rule more robustly
     const firstAlphaMatch = cleaned.match(/[A-Z]{3,}/);
@@ -370,9 +367,11 @@ export class ReconciliationEngine {
         
         const debitKeywords = d._significantKeywords || this.getSignificantKeywords(cleanDebitDetails);
         
-        // FAST-PATH: Keyword Intersection
+        // FAST-PATH: Keyword Intersection (with substring support for typos/suffixes)
         if (creditKeywords.length > 0 && debitKeywords.length > 0) {
-           const hasIntersection = creditKeywords.some(k => debitKeywords.includes(k));
+           const hasIntersection = creditKeywords.some(k => 
+             debitKeywords.some(dk => k === dk || k.includes(dk) || dk.includes(k))
+           );
            if (!hasIntersection && credit.details.trim().toUpperCase() !== d.details.trim().toUpperCase()) {
               continue;
            }
@@ -523,7 +522,9 @@ export class ReconciliationEngine {
       let skipFuzzy = false;
       
       if (primaryKeywords.length > 0 && subsetKeywords.length > 0) {
-         const hasIntersection = primaryKeywords.some(k => subsetKeywords.includes(k));
+         const hasIntersection = primaryKeywords.some(k => 
+           subsetKeywords.some(sk => k === sk || k.includes(sk) || sk.includes(k))
+         );
          if (!hasIntersection && primary.details.trim().toUpperCase() !== d.details.trim().toUpperCase()) {
             skipFuzzy = true;
          }

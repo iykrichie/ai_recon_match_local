@@ -817,5 +817,31 @@
       "platform": "Win32",
       "workerSupported": true
     }
+  },
+  {
+    "id": "58aca327-56cc-44ee-8a2e-b11dfcdc5036",
+    "timestamp": "2026-07-18T23:41:40.323Z",
+    "rowsProcessed": 4557,
+    "matchedCount": 1610,
+    "exceptionCount": 1337,
+    "executionTimeMs": 2671,
+    "matchCompleteness": 70.6605222734255,
+    "averageAccuracy": 99.97670807453416,
+    "mode": "INTERNAL",
+    "apiMetrics": {
+      "apiCalls": 0,
+      "promptTokens": 0,
+      "completionTokens": 0
+    },
+    "valueMetrics": {
+      "manualEffortSavedHours": 26.83,
+      "manualEffortSavedDays": 3.35,
+      "estimatedCostSaving": 670.83
+    },
+    "systemInfo": {
+      "userAgent": "Mozilla/5.0 (Windows NT 10.0; Win64; x64; rv:152.0) Gecko/20100101 Firefox/152.0",
+      "platform": "Win32",
+      "workerSupported": true
+    }
   }
 ]
