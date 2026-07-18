@@ -726,75 +726,37 @@ export class ReconciliationEngine {
     
     // Matched items
     this.matches.forEach(m => {
-      if (this.mode === 'INTERNAL') {
-        const maxRows = Math.max(m.creditRows.length, m.debitRows.length);
+      const maxRows = Math.max(m.creditRows.length, m.debitRows.length);
+      
+      for (let i = 0; i < maxRows; i++) {
+        const credit = m.creditRows[i];
+        const debit = m.debitRows[i];
         
-        for (let i = 0; i < maxRows; i++) {
-          const credit = m.creditRows[i];
-          const debit = m.debitRows[i];
-          
-          reconciled.push({
-            // Debits Side
-            'Debits - Post Date': debit ? this.formatDate(debit.date) : '',
-            'Debits - Val Date': debit ? this.formatDate(debit.date) : '',
-            'Debits - Details': debit ? debit.details : '',
-            'Debits - Amount': debit ? debit.absAmount : '',
-            'Debits - Reference (Extracted)': debit ? debit.reference : '',
-            'Match Type': m.matchType,
-            'Matching Reference': m.matchingReference,
-            'Matching Keyword': m.matchingKeyword,
-            'Remark': m.remark,
-            'Confidence Score': m.confidence.toFixed(2),
-            'Human Review Flag': m.humanReviewRequired ? 'Yes' : 'No',
-            // Credits Side
-            'Credits - Post Date': credit ? this.formatDate(credit.date) : '',
-            'Credits - Val Date': credit ? this.formatDate(credit.date) : '',
-            'Credits - Details': credit ? credit.details : '',
-            'Credits - Amount': credit ? credit.absAmount : '',
-            'Credits - Reference (Extracted)': credit ? credit.reference : '',
-            'Match Report - Match Type': m.matchType,
-            'Credits - Matching Reference': m.matchingReference,
-            'Credits - Matching Keyword': m.matchingKeyword,
-            'Credits - Remark': m.remark,
-            'Match ID': m.matchId,
-          });
-        }
-      } else {
-        // BANK_VS_GL mode
-        const glItems = m.creditRows.filter(c => c.source === 'GL').concat(m.debitRows.filter(d => d.source === 'GL'));
-        const bankItems = m.creditRows.filter(c => c.source === 'BANK').concat(m.debitRows.filter(d => d.source === 'BANK'));
-        
-        const maxRows = Math.max(glItems.length, bankItems.length);
-        
-        for (let i = 0; i < maxRows; i++) {
-          const glItem = glItems[i];
-          const stmtItem = bankItems[i];
-          
-          reconciled.push({
-            'Match ID': m.matchId,
-            'User ID': 'admin',
-            // GL Side
-            'GL Post Date': glItem ? this.formatDate(glItem.date) : '',
-            'GL Val Date': glItem ? this.formatDate(glItem.date) : '',
-            'GL Details': glItem ? glItem.details : '',
-            'GL Amount': glItem ? glItem.absAmount : '',
-            'GL Match Type': m.matchType,
-            'GL Matching Reference': glItem ? glItem.reference : '',
-            'GL Matching Keyword': glItem ? glItem.details : '',
-            'GL Remark': m.remark,
-            'GL Confidence Score': m.confidence.toFixed(2),
-            'GL Human Review Flag': m.humanReviewRequired ? 'Yes' : 'No',
-            // Statement Side
-            'Statement Post Date': stmtItem ? this.formatDate(stmtItem.date) : '',
-            'Statement Val Date': stmtItem ? this.formatDate(stmtItem.date) : '',
-            'Statement Details': stmtItem ? stmtItem.details : '',
-            'Statement Amount': stmtItem ? stmtItem.absAmount : '',
-            'Statement Match Type': m.matchType,
-            'Statement Matching Reference': stmtItem ? stmtItem.reference : '',
-            'Statement Matching Keyword': stmtItem ? stmtItem.details : '',
-            'Statement Remark': m.remark,
-          });
-        }
+        reconciled.push({
+          // Debits Side
+          'Debits - Post Date': debit ? this.formatDate(debit.date) : '',
+          'Debits - Val Date': debit ? this.formatDate(debit.date) : '',
+          'Debits - Details': debit ? debit.details : '',
+          'Debits - Amount': debit ? debit.absAmount : '',
+          'Debits - Reference (Extracted)': debit ? debit.reference : '',
+          'Match Type': m.matchType,
+          'Matching Reference': m.matchingReference,
+          'Matching Keyword': m.matchingKeyword,
+          'Remark': m.remark,
+          'Confidence Score': m.confidence.toFixed(2),
+          'Human Review Flag': m.humanReviewRequired ? 'Yes' : 'No',
+          // Credits Side
+          'Credits - Post Date': credit ? this.formatDate(credit.date) : '',
+          'Credits - Val Date': credit ? this.formatDate(credit.date) : '',
+          'Credits - Details': credit ? credit.details : '',
+          'Credits - Amount': credit ? credit.absAmount : '',
+          'Credits - Reference (Extracted)': credit ? credit.reference : '',
+          'Match Report - Match Type': m.matchType,
+          'Credits - Matching Reference': m.matchingReference,
+          'Credits - Matching Keyword': m.matchingKeyword,
+          'Credits - Remark': m.remark,
+          'Match ID': m.matchId,
+        });
       }
     });
 

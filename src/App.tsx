@@ -714,10 +714,10 @@ export default function App() {
                       ) : (
                         <>
                           <th className="px-6 py-3 text-[10px] font-mono uppercase tracking-widest text-black/40">Match ID</th>
-                          <th className="px-6 py-3 text-[10px] font-mono uppercase tracking-widest text-black/40">{mode === 'INTERNAL' ? 'Debit Details' : 'GL Details'}</th>
-                          <th className="px-6 py-3 text-[10px] font-mono uppercase tracking-widest text-black/40">{mode === 'INTERNAL' ? 'Debit Amount' : 'GL Amount'}</th>
-                          <th className="px-6 py-3 text-[10px] font-mono uppercase tracking-widest text-black/40">{mode === 'INTERNAL' ? 'Credit Details' : 'Stmt Details'}</th>
-                          <th className="px-6 py-3 text-[10px] font-mono uppercase tracking-widest text-black/40">{mode === 'INTERNAL' ? 'Credit Amount' : 'Stmt Amount'}</th>
+                          <th className="px-6 py-3 text-[10px] font-mono uppercase tracking-widest text-black/40">Debit Details</th>
+                          <th className="px-6 py-3 text-[10px] font-mono uppercase tracking-widest text-black/40">Debit Amount</th>
+                          <th className="px-6 py-3 text-[10px] font-mono uppercase tracking-widest text-black/40">Credit Details</th>
+                          <th className="px-6 py-3 text-[10px] font-mono uppercase tracking-widest text-black/40">Credit Amount</th>
                           <th className="px-6 py-3 text-[10px] font-mono uppercase tracking-widest text-black/40">Type</th>
                           <th className="px-6 py-3 text-[10px] font-mono uppercase tracking-widest text-black/40">Remark</th>
                         </>
@@ -765,16 +765,16 @@ export default function App() {
                             <>
                               <td className="px-6 py-4 text-xs font-mono text-black/60 truncate max-w-[100px]">{row['Match ID']}</td>
                               <td className="px-6 py-4 text-sm font-medium truncate max-w-[200px]">
-                                {mode === 'INTERNAL' ? row['Debits - Details'] : row['GL Details']}
+                                {row['Debits - Details']}
                               </td>
                               <td className="px-6 py-4 text-sm font-mono text-emerald-600">
-                                {mode === 'INTERNAL' ? row['Debits - Amount'] : row['GL Amount']}
+                                {row['Debits - Amount']}
                               </td>
                               <td className="px-6 py-4 text-sm font-medium truncate max-w-[200px]">
-                                {mode === 'INTERNAL' ? row['Credits - Details'] : row['Statement Details']}
+                                {row['Credits - Details']}
                               </td>
                               <td className="px-6 py-4 text-sm font-mono text-blue-600">
-                                {mode === 'INTERNAL' ? row['Credits - Amount'] : row['Statement Amount']}
+                                {row['Credits - Amount']}
                               </td>
                               <td className="px-6 py-4">
                                 <span className={cn(
