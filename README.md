@@ -6,9 +6,8 @@
 
 ## 🚀 Features
 
-### 1. Dual Reconciliation Modes
+### 1. Reconciliation Engine
 - **Internal Ledger Match:** Automatically identifies offsetting debits and credits within a single ledger file.
-- **Bank vs GL Match:** Performs a comprehensive comparison between a Bank Statement and a General Ledger extract.
 
 ### 2. Two-Phase Matching Architecture
 
@@ -179,9 +178,6 @@ interface ReconciliationOutput {
 - **Expected (Phase 1):** The engine pairs debits with credits of the same amount using a strict 1-to-1 constraint with 85% narration threshold.
 - **Expected (Phase 2):** Remaining unmatched entries are checked for aggregation combinations (M-to-1 / 1-to-M) with zero-tolerance sum validation and AND-gate semantic+structural checks.
 
-#### 2. Bank vs GL Reconciliation
-- **Input:** Two CSV or Excel files (Bank Statement + GL Extract).
-- **Expected:** The engine matches entries across files based on amount, date window (90 days), and narration similarity (85%).
 
 #### 3. AI Semantic Matching (`Run Smart Match`)
 - **Trigger:** Click "Run Smart Match (AI)" on the results screen.
