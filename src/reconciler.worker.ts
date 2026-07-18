@@ -1,10 +1,10 @@
 import { ReconciliationEngine } from './reconciler';
 
 self.onmessage = (e: MessageEvent) => {
-  const { data, dataB } = e.data;
+  const { data } = e.data;
   
   try {
-    const engine = new ReconciliationEngine(data, dataB);
+    const engine = new ReconciliationEngine(data);
     const results = engine.run();
     self.postMessage({ type: 'SUCCESS', results });
   } catch (error) {

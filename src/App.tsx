@@ -20,20 +20,21 @@ import {
 import { clsx, type ClassValue } from 'clsx';
 import { twMerge } from 'tailwind-merge';
 import DocumentationModal from './components/DocumentationModal';
-import ObservabilityDashboard from './components/ObservabilityDashboard';
+
 import { ollamaService } from './services/ollamaService';
 import { monitoringService } from './services/monitoringService';
 import { ReconciliationEngine } from './reconciler';
+
+import { useNavigate } from 'react-router-dom';
 
 function cn(...inputs: ClassValue[]) {
   return twMerge(clsx(inputs));
 }
 
 export default function App() {
-  const [mode] = useState<'INTERNAL' | 'BANK_VS_GL'>('INTERNAL');
-  const [fileA, setFileA] = useState<File | null>(null);
-  const [fileB, setFileB] = useState<File | null>(null);
-  const [statsA, setStatsA] = useState<{ rows: number, debits: number, credits: number, data: any[] } | null>(null);
+  const navigate = useNavigate();
+    const [fileA, setFileA] = useState<File | null>(null);
+    const [statsA, setStatsA] = useState<{ rows: number, debits: number, credits: number, data: any[] } | null>(null);
   const [statsB, setStatsB] = useState<{ rows: number, debits: number, credits: number, data: any[] } | null>(null);
   const [loading, setLoading] = useState(false);
   const [elapsedTime, setElapsedTime] = useState(0);
@@ -54,7 +55,6 @@ export default function App() {
   const [activeTab, setActiveTab] = useState<'1-to-1' | 'Grouped' | 'Unmatched'>('1-to-1');
   const [error, setError] = useState<string | null>(null);
   const [isDocOpen, setIsDocOpen] = useState(false);
-  const [isObsOpen, setIsObsOpen] = useState(false);
   const [isSmartMatching, setIsSmartMatching] = useState(false);
   const [ollamaStatus, setOllamaStatus] = useState<'checking' | 'online' | 'offline'>('checking');
 
@@ -66,19 +66,20 @@ export default function App() {
   }, []);
 
   const fileInputARef = useRef<HTMLInputElement>(null);
-  const fileInputBRef = useRef<HTMLInputElement>(null);
-
-  const readFile = (file: File, callback: (stats: any) => void) => {
+  
+  const readFile = (file: File, callback: (stats: any) => void, onClearFile: () => void) => {
     const ext = file.name.split('.').pop()?.toLowerCase();
     
     if (ext !== 'csv' && ext !== 'xls' && ext !== 'xlsx') {
       setError('Only CSV and Excel files (.xls, .xlsx) are allowed.');
+      onClearFile();
       return;
     }
 
     const processJson = (json: any[]) => {
       if (json.length === 0) {
         setError('The uploaded file appears to be empty.');
+        onClearFile();
         return;
       }
 
@@ -104,7 +105,27 @@ export default function App() {
       if (!creditKey) missing.push('Credits');
 
       if (missing.length > 0) {
-        console.warn(`Missing columns: ${missing.join(', ')}. The reconciliation might be incomplete.`);
+        setError(`Upload Failed: Missing required columns (${missing.join(', ')}). Ensure your file contains Date, Reference, Details, and Amount (or Debit/Credit) columns to proceed.`);
+        onClearFile();
+        return;
+      }
+
+      // Check if critical columns are completely empty (no data in any row)
+      // We check up to the first 500 rows to be performant but thorough
+      const rowsToCheck = json.slice(0, 500);
+      const hasDateData = dateKey ? rowsToCheck.some(r => String(r[dateKey] || '').trim()) : false;
+      const hasRefData = refKey ? rowsToCheck.some(r => String(r[refKey] || '').trim()) : false;
+      const hasDetailData = detailKey ? rowsToCheck.some(r => String(r[detailKey] || '').trim()) : false;
+
+      const emptyColumns = [];
+      if (!hasDateData) emptyColumns.push('Date');
+      if (!hasRefData) emptyColumns.push('Reference');
+      if (!hasDetailData) emptyColumns.push('Details');
+
+      if (emptyColumns.length > 0) {
+        setError(`Upload Failed: The following required columns exist but are completely empty: ${emptyColumns.join(', ')}. Please ensure your file contains valid data.`);
+        onClearFile();
+        return;
       }
 
       let debits = 0;
@@ -136,6 +157,12 @@ export default function App() {
         if (Math.abs(c) > 0) credits++;
       });
 
+      if (debits === 0 && credits === 0) {
+        setError(`Upload Failed: No valid amounts found. Ensure your file contains numerical data in Amount or Debit/Credit columns.`);
+        onClearFile();
+        return;
+      }
+
       callback({ rows: json.length, debits, credits, data: json });
     };
 
@@ -147,6 +174,7 @@ export default function App() {
         error: (err) => {
           console.error('File read error:', err);
           setError('Failed to read file. Please ensure it is a valid CSV file.');
+          onClearFile();
         }
       });
     } else {
@@ -162,6 +190,7 @@ export default function App() {
         } catch (err) {
           console.error('Excel parse error:', err);
           setError('Failed to parse Excel file. Ensure it is not corrupted.');
+          onClearFile();
         }
       };
       reader.readAsBinaryString(file);
@@ -174,31 +203,23 @@ export default function App() {
       setFileA(file);
       setResults(null);
       setError(null);
-      readFile(file, setStatsA);
+      readFile(file, setStatsA, () => {
+        setFileA(null);
+        if (fileInputARef.current) fileInputARef.current.value = '';
+      });
     }
   };
 
-  const handleFileB = (e: React.ChangeEvent<HTMLInputElement>) => {
-    const file = e.target.files?.[0];
-    if (file) {
-      setFileB(file);
-      setResults(null);
-      setError(null);
-      readFile(file, setStatsB);
-    }
-  };
-
-  const processReconciliation = async () => {
+    const processReconciliation = async () => {
     if (!statsA) return;
-    if (mode === 'BANK_VS_GL' && !statsB) return;
-
+    
     setLoading(true);
     setError(null);
 
     const runMainThread = () => {
       try {
         console.log('Running reconciliation on the main thread...');
-        const engine = new ReconciliationEngine(statsA.data, statsB?.data || undefined);
+        const engine = new ReconciliationEngine(statsA.data);
         const results = engine.run();
         if (results.metrics) {
           results.metrics.apiMetrics = ollamaService.getUsageMetrics();
@@ -297,15 +318,21 @@ export default function App() {
         return;
       }
 
-      // Take first 10 — llama3.1:8b processes them in a single batch call
-      const pairsToAnalyze = potentialPairs.slice(0, 10);
-      const aiResults = await ollamaService.batchAnalyze(pairsToAnalyze);
+      // Process all potential pairs in chunks of 10 to maintain LLM accuracy
+      const chunkSize = 10;
+      let aiResults: any[] = [];
+      
+      for (let i = 0; i < potentialPairs.length; i += chunkSize) {
+        const chunk = potentialPairs.slice(i, i + chunkSize);
+        const chunkResults = await ollamaService.batchAnalyze(chunk);
+        aiResults = [...aiResults, ...chunkResults];
+      }
 
       // Update results with AI findings
       const updatedReconciled = [...results.reconciled];
       aiResults.forEach(aiRes => {
         if (aiRes.confidence > 75) {
-          const pair = pairsToAnalyze.find(p => p.id === aiRes.id);
+          const pair = potentialPairs.find(p => p.id === aiRes.id);
           if (pair) {
             // Find and update the rows in the results
             // This is a complex update in a real app, here we just mark them
@@ -467,20 +494,18 @@ export default function App() {
                   <FileSpreadsheet className="w-8 h-8 text-black/20" />
                 </div>
                 <h2 className="text-2xl font-bold mb-2">
-                  {mode === 'INTERNAL' ? 'Upload Ledger Dump' : 'Upload Bank & GL Files'}
+                  'Upload Ledger Dump'
                 </h2>
                 <p className="text-black/50 max-w-md mx-auto text-sm">
-                  {mode === 'INTERNAL'
-                    ? 'The engine will match Debits and Credits within a single ledger file.'
-                    : 'The engine will match Bank Statement entries against your General Ledger records.'}
+                  'The engine will match Debits and Credits within a single ledger file.'
                 </p>
               </div>
 
-              <div className={cn("grid gap-6 mb-8", mode === 'BANK_VS_GL' ? "grid-cols-2" : "grid-cols-1")}>
+              <div className="grid gap-6 mb-8 grid-cols-1">
                 {/* File A */}
                 <div className="space-y-4">
                   <label className="text-[10px] font-bold uppercase tracking-widest text-black/40">
-                    {mode === 'INTERNAL' ? 'LEDGER FILE' : 'BANK STATEMENT'}
+                    'LEDGER FILE'
                   </label>
                   <div
                     onClick={() => fileInputARef.current?.click()}
@@ -521,48 +546,7 @@ export default function App() {
                 </div>
 
                 {/* File B (Only for Bank vs GL) */}
-                {mode === 'BANK_VS_GL' && (
-                  <div className="space-y-4">
-                    <label className="text-[10px] font-bold uppercase tracking-widest text-black/40">GENERAL LEDGER</label>
-                    <div
-                      onClick={() => fileInputBRef.current?.click()}
-                      className={cn(
-                        "border-2 border-dashed border-black/10 rounded-xl p-8 cursor-pointer transition-all hover:border-black/30 text-center",
-                        fileB && "border-black/40 bg-black/5"
-                      )}
-                    >
-                      <input type="file" ref={fileInputBRef} onChange={handleFileB} accept=".csv, .xls, .xlsx" className="hidden" />
-                      {fileB ? (
-                        <div className="flex flex-col items-center gap-2">
-                          <CheckCircle2 className="w-6 h-6 text-emerald-500" />
-                          <span className="text-sm font-medium truncate max-w-full">{fileB.name}</span>
-                        </div>
-                      ) : (
-                        <div className="flex flex-col items-center gap-2">
-                          <Upload className="w-6 h-6 text-black/20" />
-                          <span className="text-xs font-medium text-black/40">Drop file or click</span>
-                        </div>
-                      )}
-                    </div>
-                    {statsB && (
-                      <div className="grid grid-cols-3 gap-2">
-                        <div className="bg-black/5 p-2 rounded-lg text-center">
-                          <div className="text-[8px] font-bold text-black/40 uppercase">Rows</div>
-                          <div className="text-xs font-bold">{statsB.rows}</div>
-                        </div>
-                        <div className="bg-emerald-50 p-2 rounded-lg text-center">
-                          <div className="text-[8px] font-bold text-emerald-600/60 uppercase">Dr</div>
-                          <div className="text-xs font-bold text-emerald-700">{statsB.debits}</div>
-                        </div>
-                        <div className="bg-blue-50 p-2 rounded-lg text-center">
-                          <div className="text-[8px] font-bold text-blue-600/60 uppercase">Cr</div>
-                          <div className="text-xs font-bold text-blue-700">{statsB.credits}</div>
-                        </div>
-                      </div>
-                    )}
-                  </div>
-                )}
-              </div>
+                              </div>
 
               {error && (
                 <div className="flex items-center gap-2 text-red-500 bg-red-50 p-3 rounded-lg text-sm mb-6">
@@ -572,11 +556,11 @@ export default function App() {
               )}
 
               <button
-                disabled={!statsA || (mode === 'BANK_VS_GL' && !statsB) || loading}
+                disabled={!statsA || loading}
                 onClick={processReconciliation}
                 className={cn(
                   "w-full py-4 rounded-xl font-bold text-lg transition-all flex items-center justify-center gap-3",
-                  (!statsA || (mode === 'BANK_VS_GL' && !statsB) || loading)
+                  (!statsA || loading)
                     ? "bg-black/5 text-black/20 cursor-not-allowed"
                     : "bg-black text-white hover:bg-black/90 shadow-lg shadow-black/10"
                 )}
@@ -851,7 +835,7 @@ export default function App() {
               ollamaStatus === 'offline' ? 'Ollama Offline' : 'Checking...'}
           </div>
           <button
-            onClick={() => setIsObsOpen(true)}
+            onClick={() => navigate('/performance')}
             className="flex items-center gap-2 text-indigo-600 hover:text-indigo-800 text-xs font-bold transition-all px-3 py-1.5 bg-indigo-50 rounded-lg border border-indigo-100"
           >
             <BarChart3 className="w-4 h-4" />
@@ -880,10 +864,6 @@ export default function App() {
       <DocumentationModal
         isOpen={isDocOpen}
         onClose={() => setIsDocOpen(false)}
-      />
-      <ObservabilityDashboard
-        isOpen={isObsOpen}
-        onClose={() => setIsObsOpen(false)}
       />
     </div>
   );

@@ -95,7 +95,7 @@ async function startServer() {
     }
   });
 
-  // History endpoint for Observability Dashboard
+  // History endpoint for Performance Dashboard
   app.get("/api/v1/metrics/history", async (req, res) => {
     try {
       const data = await fs.readFile(LOGS_FILE, 'utf8');

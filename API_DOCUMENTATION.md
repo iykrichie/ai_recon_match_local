@@ -191,7 +191,7 @@ Ships performance and execution metrics to the observability pipeline. Called au
 ---
 
 ### 4. Fetch Execution History
-Retrieves the full audit trail of all processed requests. Consumed by the in-app Observability Dashboard.
+Retrieves the full audit trail of all processed requests. Consumed by the in-app Performance Dashboard.
 
 - **URL:** `/v1/metrics/history`
 - **Method:** `GET`

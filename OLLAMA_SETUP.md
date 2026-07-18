@@ -132,7 +132,7 @@ Every API call to Ollama captures token usage from the response:
 - `prompt_eval_count` → accumulated as `promptTokens`.
 - `eval_count` → accumulated as `completionTokens`.
 
-These are exposed via `ollamaService.getUsageMetrics()` and attached to the reconciliation output metrics as `apiMetrics`. The Observability Dashboard displays:
+These are exposed via `ollamaService.getUsageMetrics()` and attached to the reconciliation output metrics as `apiMetrics`. The Performance Dashboard displays:
 - **API Calls** — total number of Ollama generate invocations.
 - **Tokens Consumed** — total prompt + completion tokens across all calls.
 

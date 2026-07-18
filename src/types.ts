@@ -1,4 +1,3 @@
-export type ReconciliationMode = 'INTERNAL_GL' | 'BANK_VS_GL';
 
 export interface Transaction {
   id: string;

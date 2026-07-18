@@ -135,7 +135,7 @@ Operates **only** on transactions left unmatched after Phase 1. Finds Many-to-On
 │       └── monitoringService.ts     # Observability & metrics shipping to /api/v1/metrics
 └── src/components/
     ├── DocumentationModal.tsx       # In-app user guide
-    └── ObservabilityDashboard.tsx   # Real-time performance dashboard (5 KPI cards + audit trail)
+    └── PerformanceDashboard.tsx   # Real-time performance dashboard (5 KPI cards + audit trail)
 ```
 
 ### Key Data Types (`src/types.ts`)
@@ -203,7 +203,7 @@ The engine accepts **CSV** and **Excel** (`.xls`, `.xlsx`) files. Preferred head
 4. **Verify Metrics:** Check "Match Completeness" and "Average Accuracy" in the results stats.
 5. **Tab Navigation:** Verify 1-to-1, Grouped, and Unmatched tabs display correctly.
 6. **CSV Export:** Verify reports use `DD/MM/YYYY` date format and include `Match ID`.
-7. **Observability Dashboard:** Open the dashboard and confirm all 5 KPI cards render (Match Completeness, Avg. Accuracy, Time Saved, API Calls, Tokens Consumed).
+7. **Performance Dashboard:** Open the dashboard and confirm all 5 KPI cards render (Match Completeness, Avg. Accuracy, Time Saved, API Calls, Tokens Consumed).
 
 ---
 

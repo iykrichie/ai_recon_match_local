@@ -7,8 +7,7 @@ export class ReconciliationEngine {
   private matches: MatchResult[] = [];
   private unmatchedDebits: Set<string> = new Set();
   private unmatchedCredits: Set<string> = new Set();
-  private mode: 'INTERNAL' | 'BANK_VS_GL' = 'INTERNAL';
-  private similarityCache = new Map<string, number>();
+    private similarityCache = new Map<string, number>();
 
   private static readonly DATE_WINDOW_DAYS = 90;
   private static readonly AMOUNT_TOLERANCE_PERCENT = 0;
@@ -81,14 +80,8 @@ export class ReconciliationEngine {
       : [];
   }
 
-  constructor(sourceA: any[], sourceB?: any[]) {
-    if (sourceB) {
-      this.mode = 'BANK_VS_GL';
-      this.preprocessBankVsGL(sourceA, sourceB);
-    } else {
-      this.mode = 'INTERNAL';
-      this.preprocessInternal(sourceA);
-    }
+  constructor(sourceA: any[]) {
+    this.preprocessInternal(sourceA);
   }
 
   private getFuzzyScore(s1: string, s2: string): number {
@@ -286,94 +279,18 @@ export class ReconciliationEngine {
     });
   }
 
-  private preprocessBankVsGL(bankData: any[], glData: any[]) {
-    const bankHeaders = this.getMapHeaders(bankData[0]);
-    bankData.forEach((row, index) => {
-      const date = this.parseDate(bankHeaders.dateKey ? row[bankHeaders.dateKey] : null);
-      const reference = String(bankHeaders.refKey ? row[bankHeaders.refKey] : '');
-      const details = String(bankHeaders.detailKey ? row[bankHeaders.detailKey] : '');
-      
-      let debitVal = 0;
-      let creditVal = 0;
-      if (bankHeaders.debitKey === bankHeaders.creditKey && bankHeaders.debitKey) {
-        const amt = this.parseAmount(row[bankHeaders.debitKey]);
-        if (amt > 0) debitVal = amt;
-        else if (amt < 0) creditVal = Math.abs(amt);
-      } else {
-        debitVal = Math.abs(this.parseAmount(bankHeaders.debitKey ? row[bankHeaders.debitKey] : 0));
-        creditVal = Math.abs(this.parseAmount(bankHeaders.creditKey ? row[bankHeaders.creditKey] : 0));
-      }
-      
-      const id = `bank_${index}_${Math.random().toString(36).substr(2, 5)}`;
-      
-      if (creditVal > 0) {
-        const cId = id + '_C';
-        const cTxn: Transaction = { id: cId, date, reference, details, debit: 0, credit: creditVal, originalAmount: creditVal, absAmount: creditVal, type: 'Normal', side: 'Credit', source: 'BANK' };
-        this.applyPrecomputedFields(cTxn);
-        this.credits.push(cTxn);
-        this.unmatchedCredits.add(cId);
-      } 
-      else if (debitVal > 0) {
-        const dId = id + '_D';
-        const dTxn: Transaction = { id: dId, date, reference, details, debit: debitVal, credit: 0, originalAmount: -debitVal, absAmount: debitVal, type: 'Normal', side: 'Debit', source: 'BANK' };
-        this.applyPrecomputedFields(dTxn);
-        this.debits.push(dTxn);
-        this.unmatchedDebits.add(dId);
-      }
-    });
-
-    const glHeaders = this.getMapHeaders(glData[0]);
-    glData.forEach((row, index) => {
-      const date = this.parseDate(glHeaders.dateKey ? row[glHeaders.dateKey] : null);
-      const reference = String(glHeaders.refKey ? row[glHeaders.refKey] : '');
-      const details = String(glHeaders.detailKey ? row[glHeaders.detailKey] : '');
-      
-      let debitVal = 0;
-      let creditVal = 0;
-      if (glHeaders.debitKey === glHeaders.creditKey && glHeaders.debitKey) {
-        const amt = this.parseAmount(row[glHeaders.debitKey]);
-        if (amt > 0) debitVal = amt;
-        else if (amt < 0) creditVal = Math.abs(amt);
-      } else {
-        debitVal = Math.abs(this.parseAmount(glHeaders.debitKey ? row[glHeaders.debitKey] : 0));
-        creditVal = Math.abs(this.parseAmount(glHeaders.creditKey ? row[glHeaders.creditKey] : 0));
-      }
-
-      const id = `gl_${index}_${Math.random().toString(36).substr(2, 5)}`;
-      
-      if (debitVal > 0) {
-        const dId = id + '_D';
-        const dTxn: Transaction = { id: dId, date, reference, details, debit: debitVal, credit: 0, originalAmount: debitVal, absAmount: debitVal, type: 'Normal', side: 'Debit', source: 'GL' };
-        this.applyPrecomputedFields(dTxn);
-        this.debits.push(dTxn);
-        this.unmatchedDebits.add(dId);
-      }
-      else if (creditVal > 0) {
-        const cId = id + '_C';
-        const cTxn: Transaction = { id: cId, date, reference, details, debit: 0, credit: creditVal, originalAmount: -creditVal, absAmount: creditVal, type: 'Normal', side: 'Credit', source: 'GL' };
-        this.applyPrecomputedFields(cTxn);
-        this.credits.push(cTxn);
-        this.unmatchedCredits.add(cId);
-      }
-    });
-  }
+  
 
   public run(): ReconciliationOutput {
     const startTime = performance.now();
     
-    if (this.mode === 'INTERNAL') {
-      this.matchInternalLedger();
-    } else {
-      this.matchBankVsGL();
-    }
+    this.matchInternalLedger();
     
     const output = this.generateOutput();
     const endTime = performance.now();
     
     // Inject metrics
-    const rowsProcessed = (this.mode === 'INTERNAL') 
-      ? this.debits.length + this.credits.length
-      : this.debits.length + this.credits.length; // Same either way since they are pre-populated
+    const rowsProcessed = this.debits.length + this.credits.length;
       
     // Calculate percentage matched: 1 - (unmatched / total_entries)
     // The total dataset (Internal Ledger) is divided into debits and credits
@@ -394,7 +311,7 @@ export class ReconciliationEngine {
       executionTimeMs: endTime - startTime,
       matchCompleteness,
       averageAccuracy,
-      mode: this.mode,
+      mode: 'INTERNAL',
       timestamp: new Date().toISOString()
     };
     
@@ -587,111 +504,7 @@ export class ReconciliationEngine {
     }
   }
 
-  private matchBankVsGL() {
-    const unmatchedDebitsPool = this.getUnmatchedDebits();
-    const unmatchedCredits = this.getUnmatchedCredits();
-
-    // 1-to-1 Matching Logic
-    // Sort both pools by date to respect chronological order
-    unmatchedDebitsPool.sort((a, b) => a.date.getTime() - b.date.getTime());
-    unmatchedCredits.sort((a, b) => a.date.getTime() - b.date.getTime());
-
-    // Group debits by amount for O(1) lookup
-    const debitsByAmount = new Map<string, Transaction[]>();
-    for (const d of unmatchedDebitsPool) {
-      const amtKey = d.absAmount.toFixed(2);
-      const list = debitsByAmount.get(amtKey) || [];
-      list.push(d);
-      debitsByAmount.set(amtKey, list);
-    }
-
-    for (const credit of unmatchedCredits) {
-      let bestMatch: Transaction | null = null;
-      let highestScore = -1;
-
-      const amtKey = credit.absAmount.toFixed(2);
-      const amountCandidates = debitsByAmount.get(amtKey);
-
-      if (!amountCandidates || amountCandidates.length === 0) continue;
-
-      const candidates = amountCandidates.filter(d => {
-        const diffDays = Math.abs(d.date.getTime() - credit.date.getTime()) / (1000 * 60 * 60 * 24);
-        if (diffDays > ReconciliationEngine.DATE_WINDOW_DAYS) return false;
-
-        // Source check: must match Bank entry with GL entry
-        if (d.source === credit.source) return false;
-
-        return true;
-      });
-
-      const cleanCreditDetails = credit._cleanNarration !== undefined ? credit._cleanNarration : this.cleanNarration(credit.details);
-      const creditKeywords = credit._significantKeywords || this.getSignificantKeywords(cleanCreditDetails);
-
-      for (const d of candidates) {
-        const cleanDebitDetails = d._cleanNarration !== undefined ? d._cleanNarration : this.cleanNarration(d.details);
-        const debitKeywords = d._significantKeywords || this.getSignificantKeywords(cleanDebitDetails);
-
-        // FAST-PATH: Keyword Intersection
-        if (creditKeywords.length > 0 && debitKeywords.length > 0) {
-           const hasIntersection = creditKeywords.some(k => debitKeywords.includes(k));
-           if (!hasIntersection && credit.details.trim().toUpperCase() !== d.details.trim().toUpperCase()) {
-              continue;
-           }
-        }
-
-        let fuzzyScore = this.getFuzzyScore(cleanCreditDetails, cleanDebitDetails);
-
-        // Safety: If cleaned narrations are empty, don't match unless raw details are identical
-        if (!cleanCreditDetails && !cleanDebitDetails) {
-          if (credit.details.trim().toUpperCase() !== d.details.trim().toUpperCase()) {
-            fuzzyScore = 0;
-          } else {
-            fuzzyScore = 100;
-          }
-        }
-
-        // Base Requirement: Strict gate for names similarity even in Bank vs GL
-        if (fuzzyScore < 95 && credit.details.trim().toUpperCase() !== d.details.trim().toUpperCase()) {
-          continue;
-        }
-
-        if (fuzzyScore < ReconciliationEngine.NARRATION_THRESHOLD) continue;
-
-        if (fuzzyScore > highestScore) {
-          highestScore = fuzzyScore;
-          bestMatch = d;
-        } else if (fuzzyScore === highestScore) {
-          if (bestMatch) {
-            const currentBestDiff = Math.abs(bestMatch.date.getTime() - credit.date.getTime());
-            const newDiff = Math.abs(d.date.getTime() - credit.date.getTime());
-            if (newDiff < currentBestDiff) bestMatch = d;
-          } else {
-            bestMatch = d;
-          }
-        }
-        
-        // Break early if perfect score on the same day
-        if (highestScore === 100 && bestMatch) {
-            const currentBestDiff = Math.abs(bestMatch.date.getTime() - credit.date.getTime());
-            if (currentBestDiff === 0) break;
-        }
-      }
-
-      if (bestMatch) {
-        const variance = credit.absAmount - bestMatch.absAmount;
-        const remark = Math.abs(variance) < 0.01 ? 'Exact Match' : `Fee Diff: ${variance.toFixed(2)}`;
-        const confidence = highestScore;
-        const humanReviewRequired = confidence < 70;
-        
-        this.recordMatch([credit], [bestMatch], highestScore, confidence, humanReviewRequired, '1-to-1', credit.reference, credit.details, remark);
-        
-        // Remove from the map
-        const list = debitsByAmount.get(amtKey)!;
-        const idx = list.findIndex(d => d.id === bestMatch!.id);
-        if (idx !== -1) list.splice(idx, 1);
-      }
-    }
-  }
+  
 
   private areTransactionsSimilar(primary: Transaction, subset: Transaction[]): boolean {
     const cleanPrimaryNarration = primary._cleanNarration !== undefined ? primary._cleanNarration : this.cleanNarration(primary.details);
@@ -789,7 +602,7 @@ export class ReconciliationEngine {
       const targetAmount = summary.absAmount;
       const validCandidates = subsetPool.filter(t => {
         if (t.absAmount > targetAmount) return false; // Impossible to sum if larger than target
-        if (this.mode === 'BANK_VS_GL' && t.source === summary.source) return false;
+        
         const diffDays = Math.abs(t.date.getTime() - summary.date.getTime()) / (1000 * 60 * 60 * 24);
         return diffDays <= ReconciliationEngine.DATE_WINDOW_DAYS;
       });
