@@ -21,6 +21,17 @@ flowchart TD
 
 ---
 
+## 💻 Hardware Requirements
+
+When deploying AIMatch, especially the standalone or VM options, ensure your host machine meets the following specifications to effectively run the application and the local `llama3.1:8b` model:
+
+- **RAM**: Minimum **16 GB** (8 GB might work, but 16 GB is highly recommended for smooth LLM inference).
+- **Storage (HDD/SSD)**: Minimum **20 GB** free space (the `llama3.1:8b` model takes up ~4.7 GB alone; node modules and logs require additional space). An SSD is **highly recommended** for faster model loading and response times.
+- **CPU**: Modern multi-core processor (4+ cores).
+- **GPU (Optional but Recommended)**: NVIDIA GPU with at least 8 GB VRAM for hardware-accelerated AI inference.
+
+---
+
 ## ⚙️ Environment Configuration
 
 Create a `.env` file in the root of the project to configure the environment variables:
@@ -124,9 +135,9 @@ volumes:
 
 ---
 
-## 🖥 Option 2: Standalone VM Deployment (Systemd & PM2)
+## 🖥 Option 2: Linux VM Deployment (Ubuntu/Debian)
 
-If you are deploying directly to a Virtual Private Server (VPS) running Linux (e.g. Ubuntu 22.04), use PM2 for process monitoring and systemd for Ollama.
+If you are deploying directly to a Virtual Private Server (VPS) running Linux (e.g., Ubuntu 22.04), use PM2 for process monitoring and systemd for managing the Ollama service.
 
 ### Step 1: Install System Dependencies
 ```bash
@@ -195,6 +206,64 @@ Launch the Express server with PM2 to keep it running in the background and surv
 pm2 start tsx --name "aimatch" -- server.ts
 pm2 save
 pm2 startup
+```
+
+---
+
+## 🪟 Option 3: Windows Server / VM Deployment
+
+If you are deploying on a Windows Virtual Machine or Windows Server environment, you can use PM2 for process management alongside the native Windows installer for Ollama.
+
+### Step 1: Install System Dependencies
+1. **Node.js**: Download and install the latest LTS version of Node.js (v20.x) from the [official website](https://nodejs.org/).
+2. **Git**: Download and install Git for Windows from [git-scm.com](https://git-scm.com/).
+3. **Global Packages**: Open PowerShell as Administrator and install `pm2`, `pm2-windows-startup`, and `tsx`:
+   ```powershell
+   npm install -g pm2 tsx pm2-windows-startup
+   ```
+4. **Configure PM2 to start on boot**:
+   ```powershell
+   pm2-startup install
+   ```
+
+### Step 2: Set Up Ollama
+1. Download the Windows installer from [ollama.com/download/windows](https://ollama.com/download/windows) and run the installer.
+2. Open PowerShell and download the required LLM model:
+   ```powershell
+   ollama pull llama3.1:8b
+   ```
+
+### Step 3: Configure Ollama CORS on Windows
+To allow external frontend access (if the frontend runs on a different domain/port), you must configure environment variables for Ollama.
+
+1. Open the Start menu, search for **"Environment Variables"**, and select **"Edit the system environment variables"**.
+2. Click the **"Environment Variables..."** button.
+3. Under **"System variables"**, click **"New..."** and add the following two variables:
+   - **Variable name**: `OLLAMA_HOST` | **Variable value**: `0.0.0.0`
+   - **Variable name**: `OLLAMA_ORIGINS` | **Variable value**: `*`
+4. Completely close and **restart the Ollama application** for the new environment variables to be applied.
+
+### Step 4: Clone and Build AIMatch
+Open PowerShell and run:
+```powershell
+cd C:\ # Or your preferred installation directory
+git clone <your-repository-url> aimatch
+cd aimatch
+
+# Copy the environment file
+Copy-Item .env.example .env
+# Edit .env (using Notepad or VSCode) and set OLLAMA_HOST if necessary
+
+# Install dependencies and build the project
+npm install
+npm run build
+```
+
+### Step 5: Start the Application with PM2
+Launch the Express server with PM2:
+```powershell
+pm2 start tsx --name "aimatch" -- server.ts
+pm2 save
 ```
 
 ---
