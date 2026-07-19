@@ -275,10 +275,8 @@ export default function App() {
     setIsSmartMatching(true);
 
     try {
-      // Find unmatched items
-      const unmatched = results.reconciled.filter(r =>
-        (r['GL Match Type'] === 'U' || r['Statement Match Type'] === 'U' || r['Match Type'] === 'U' || r['Match Report - Match Type'] === 'U')
-      );
+      // Unmatched items are stored in results.exceptions (not results.reconciled)
+      const unmatched = results.exceptions || [];
 
       if (unmatched.length === 0) {
         alert("No unmatched items to analyze.");
@@ -286,27 +284,21 @@ export default function App() {
         return;
       }
 
-      // Group into potential pairs (this is a simplified heuristic for demo)
-      // In a real app, we'd look for items with same amounts but different narrations
-      const debits = unmatched.filter(u => (u['Debits - Amount'] > 0 || u['GL Amount'] > 0));
-      const credits = unmatched.filter(u => (u['Credits - Amount'] > 0 || u['Statement Amount'] > 0));
+      // Group unmatched exceptions into debits and credits
+      const debits = unmatched.filter(u => u['Debits'] > 0);
+      const credits = unmatched.filter(u => u['Credits'] > 0);
 
       const potentialPairs: any[] = [];
       debits.forEach(d => {
-        const dAmount = d['Debits - Amount'] || d['GL Amount'];
-        const dDetails = d['Debits - Details'] || d['GL Details'];
-
         credits.forEach(c => {
-          const cAmount = c['Credits - Amount'] || c['Statement Amount'];
-          const cDetails = c['Credits - Details'] || c['Statement Details'];
-
-          if (Math.abs(dAmount - cAmount) < 0.01) {
+          if (Math.abs(d['Debits'] - c['Credits']) < 0.01) {
             potentialPairs.push({
-              id: `${d['Match ID']}_${c['Match ID']}`,
+              // Generate a stable temporary ID for batch matching matching pairs
+              id: `ai_${d['Reference']}_${c['Reference']}_${Math.random().toString(36).substr(2, 5)}`,
               debit: d,
               credit: c,
-              narrationA: dDetails,
-              narrationB: cDetails
+              narrationA: d['Details'],
+              narrationB: c['Details']
             });
           }
         });
@@ -330,36 +322,80 @@ export default function App() {
 
       // Update results with AI findings
       const updatedReconciled = [...results.reconciled];
+      let updatedExceptions = [...results.exceptions];
+      let matchCount = 0;
+
       aiResults.forEach(aiRes => {
         if (aiRes.confidence > 75) {
           const pair = potentialPairs.find(p => p.id === aiRes.id);
           if (pair) {
-            // Find and update the rows in the results
-            // This is a complex update in a real app, here we just mark them
-            const dIdx = updatedReconciled.findIndex(r => r['Match ID'] === pair.debit['Match ID']);
-            const cIdx = updatedReconciled.findIndex(r => r['Match ID'] === pair.credit['Match ID']);
+            // Reconcile and construct a unified row for reconciled table representation
+            const newMatchRow = {
+              'Debits - Post Date': pair.debit['Date'],
+              'Debits - Val Date': pair.debit['Date'],
+              'Debits - Details': pair.debit['Details'],
+              'Debits - Amount': pair.debit['Debits'],
+              'Debits - Reference (Extracted)': pair.debit['Reference'],
+              'Match Type': 'M',
+              'Matching Reference': pair.debit['Reference'],
+              'Matching Keyword': pair.debit['Details'],
+              'Remark': `AI Matched (${aiRes.confidence}%)`,
+              'Confidence Score': aiRes.confidence.toFixed(2),
+              'Human Review Flag': 'No',
+              'Credits - Post Date': pair.credit['Date'],
+              'Credits - Val Date': pair.credit['Date'],
+              'Credits - Details': pair.credit['Details'],
+              'Credits - Amount': pair.credit['Credits'],
+              'Credits - Reference (Extracted)': pair.credit['Reference'],
+              'Match Report - Match Type': 'M',
+              'Credits - Matching Reference': pair.credit['Reference'],
+              'Credits - Matching Keyword': pair.credit['Details'],
+              'Credits - Remark': `AI Matched (${aiRes.confidence}%)`,
+              'Match ID': `match_ai_${Math.random().toString(36).substr(2, 5)}`,
+            };
 
-            if (dIdx !== -1 && cIdx !== -1) {
-              updatedReconciled[dIdx]['Remark'] = `AI Matched (${aiRes.confidence}%)`;
-              updatedReconciled[dIdx]['Match Type'] = 'M';
-              updatedReconciled[dIdx]['Confidence Score'] = aiRes.confidence.toString();
+            updatedReconciled.push(newMatchRow);
 
-              // Remove the credit row if it was separate
-              updatedReconciled.splice(cIdx, 1);
-            }
+            // Remove both the debit and credit from the exceptions list
+            updatedExceptions = updatedExceptions.filter(e => 
+              !(e['Reference'] === pair.debit['Reference'] && e['Debits'] === pair.debit['Debits']) &&
+              !(e['Reference'] === pair.credit['Reference'] && e['Credits'] === pair.credit['Credits'])
+            );
+            
+            matchCount++;
           }
         }
       });
 
-      const newResults = { ...results, reconciled: updatedReconciled };
+      // Update metrics
+      let newMetrics = results.metrics;
+      if (newMetrics) {
+        const totalEntries = (newMetrics.rowsProcessed || 0);
+        const unmatchedEntries = updatedExceptions.length;
+        const matchCompleteness = totalEntries > 0 ? (1 - (unmatchedEntries / totalEntries)) * 100 : 0;
+
+        newMetrics = {
+          ...newMetrics,
+          matchedCount: (newMetrics.matchedCount || 0) + matchCount,
+          exceptionCount: unmatchedEntries,
+          matchCompleteness,
+          apiMetrics: ollamaService.getUsageMetrics()
+        };
+      }
+
+      const newResults = { 
+        ...results, 
+        reconciled: updatedReconciled, 
+        exceptions: updatedExceptions,
+        metrics: newMetrics
+      };
       
       if (newResults.metrics) {
-        newResults.metrics.apiMetrics = ollamaService.getUsageMetrics();
         monitoringService.logReconciliation(newResults);
       }
 
       setResults(newResults);
-      alert(`AI Analysis complete. Found ${aiResults.filter(r => r.confidence > 75).length} new matches.`);
+      alert(`AI Analysis complete. Found ${matchCount} new matches.`);
     } catch (err) {
       console.error("Smart Match Error:", err);
       alert("AI Analysis failed. Please ensure Ollama is running locally (ollama serve) and the llama3.1:8b model is pulled.");

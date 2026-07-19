@@ -451,22 +451,19 @@ export class ReconciliationEngine {
     const unmatchedDebitsPool = this.getUnmatchedDebits();
     const unmatchedCredits = this.getUnmatchedCredits();
 
-    // Create a lookup map for unmatched debits by each individual reference found
+    // Create a lookup map for unmatched debits by each pre-computed normalized reference
     const debitRefMap = new Map<string, Transaction[]>();
     for (const d of unmatchedDebitsPool) {
-      if (d.reference) {
-        const refs = d.reference.split('|');
-        for (const r of refs) {
-          const list = debitRefMap.get(r) || [];
-          list.push(d);
-          debitRefMap.set(r, list);
-        }
+      const refs = d._multiReferences || [];
+      for (const r of refs) {
+        const list = debitRefMap.get(r) || [];
+        list.push(d);
+        debitRefMap.set(r, list);
       }
     }
 
     for (const credit of unmatchedCredits) {
-      if (!credit.reference) continue;
-      const creditRefs = credit.reference.split('|');
+      const creditRefs = credit._multiReferences || [];
       
       for (const r of creditRefs) {
         const candidates = debitRefMap.get(r);
