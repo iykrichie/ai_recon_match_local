@@ -43,7 +43,16 @@ async function startServer() {
   // API routes
   // Health check — reports app status + Ollama AI backend status
   app.get("/api/health", async (req, res) => {
-    const ollamaHost = process.env.OLLAMA_HOST || 'http://localhost:11434';
+    let ollamaHost = process.env.OLLAMA_HOST || 'http://localhost:11434';
+    if (ollamaHost === '0.0.0.0') {
+      ollamaHost = 'http://localhost:11434';
+    } else if (ollamaHost.includes('0.0.0.0')) {
+      ollamaHost = ollamaHost.replace('0.0.0.0', '127.0.0.1');
+    }
+    if (!ollamaHost.startsWith('http://') && !ollamaHost.startsWith('https://')) {
+      ollamaHost = 'http://' + ollamaHost;
+    }
+
     const ollamaModel = process.env.OLLAMA_MODEL || 'llama3.1:8b';
     let ollamaStatus: 'online' | 'offline' = 'offline';
 

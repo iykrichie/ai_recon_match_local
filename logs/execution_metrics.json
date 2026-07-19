@@ -843,5 +843,83 @@
       "platform": "Win32",
       "workerSupported": true
     }
+  },
+  {
+    "id": "ad3d3b99-a5cb-4813-91f0-8de04bc76c11",
+    "timestamp": "2026-07-18T23:50:53.755Z",
+    "rowsProcessed": 4557,
+    "matchedCount": 1611,
+    "exceptionCount": 1335,
+    "executionTimeMs": 4136,
+    "matchCompleteness": 70.7044107965767,
+    "averageAccuracy": 99.97599834471343,
+    "mode": "INTERNAL",
+    "apiMetrics": {
+      "apiCalls": 0,
+      "promptTokens": 0,
+      "completionTokens": 0
+    },
+    "valueMetrics": {
+      "manualEffortSavedHours": 26.85,
+      "manualEffortSavedDays": 3.36,
+      "estimatedCostSaving": 671.25
+    },
+    "systemInfo": {
+      "userAgent": "Mozilla/5.0 (Windows NT 10.0; Win64; x64; rv:152.0) Gecko/20100101 Firefox/152.0",
+      "platform": "Win32",
+      "workerSupported": true
+    }
+  },
+  {
+    "id": "4c32353b-f33b-4b68-a489-f9f31e3d82df",
+    "timestamp": "2026-07-18T23:52:07.853Z",
+    "rowsProcessed": 5578,
+    "matchedCount": 1864,
+    "exceptionCount": 1850,
+    "executionTimeMs": 3399,
+    "matchCompleteness": 66.83399067766224,
+    "averageAccuracy": 99.95028612303291,
+    "mode": "INTERNAL",
+    "apiMetrics": {
+      "apiCalls": 0,
+      "promptTokens": 0,
+      "completionTokens": 0
+    },
+    "valueMetrics": {
+      "manualEffortSavedHours": 31.07,
+      "manualEffortSavedDays": 3.88,
+      "estimatedCostSaving": 776.67
+    },
+    "systemInfo": {
+      "userAgent": "Mozilla/5.0 (Windows NT 10.0; Win64; x64; rv:152.0) Gecko/20100101 Firefox/152.0",
+      "platform": "Win32",
+      "workerSupported": true
+    }
+  },
+  {
+    "id": "b492a185-1c84-41af-b6d8-dddd53b5814e",
+    "timestamp": "2026-07-19T00:07:59.175Z",
+    "rowsProcessed": 43705,
+    "matchedCount": 1728,
+    "exceptionCount": 40249,
+    "executionTimeMs": 912936,
+    "matchCompleteness": 7.9075620638370925,
+    "averageAccuracy": 98.32253086419753,
+    "mode": "INTERNAL",
+    "apiMetrics": {
+      "apiCalls": 0,
+      "promptTokens": 0,
+      "completionTokens": 0
+    },
+    "valueMetrics": {
+      "manualEffortSavedHours": 28.8,
+      "manualEffortSavedDays": 3.6,
+      "estimatedCostSaving": 720
+    },
+    "systemInfo": {
+      "userAgent": "Mozilla/5.0 (Windows NT 10.0; Win64; x64; rv:152.0) Gecko/20100101 Firefox/152.0",
+      "platform": "Win32",
+      "workerSupported": true
+    }
   }
 ]

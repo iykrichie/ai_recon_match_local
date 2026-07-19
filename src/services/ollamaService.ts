@@ -30,8 +30,18 @@ function getConfig() {
     ? process.env
     : ({} as Record<string, string>);
 
+  let host = env.VITE_OLLAMA_HOST || procEnv.OLLAMA_HOST || 'http://localhost:11434';
+  if (host === '0.0.0.0') {
+    host = 'http://localhost:11434';
+  } else if (host.includes('0.0.0.0')) {
+    host = host.replace('0.0.0.0', '127.0.0.1');
+  }
+  if (!host.startsWith('http://') && !host.startsWith('https://')) {
+    host = 'http://' + host;
+  }
+
   return {
-    host:    env.VITE_OLLAMA_HOST    || procEnv.OLLAMA_HOST    || 'http://localhost:11434',
+    host,
     model:   env.VITE_OLLAMA_MODEL   || procEnv.OLLAMA_MODEL   || 'llama3.1:8b',
     timeout: parseInt(env.VITE_OLLAMA_TIMEOUT || procEnv.OLLAMA_TIMEOUT || '60000', 10),
   };
